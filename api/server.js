@@ -46,43 +46,103 @@ async function callAI(provider, apiKey, modelSize, prompt) {
         messages: [{ role: 'user', content: prompt }],
         response_format: { type: 'json_object' }
       }, {
-        headers: { 'Authorization': `Bearer ${apiKey}` }
+        headers: { 'Authorization': `Bearer ${apiKey}` },
+        timeout: 45000, // 45 seconds timeout for Vercel
+        validateStatus: (status) => status < 500 // Don't throw on 4xx errors
       });
       return JSON.parse(response.data.choices[0].message.content);
     } else {
       const response = await axios.post(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: { responseMimeType: 'application/json' }
+      }, {
+        timeout: 45000, // 45 seconds timeout for Vercel
+        validateStatus: (status) => status < 500 // Don't throw on 4xx errors
       });
       
       let content = response.data.candidates[0].content.parts[0].text;
       
-      // Clean up the response - remove markdown code blocks if present
-      content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-      
-      // Additional cleanup for common formatting issues
-      content = content.replace(/^\s*```\s*/, '').replace(/\s*```\s*$/, '');
-      
-      // Try to parse, if it fails, log the raw content for debugging
-      try {
-        return JSON.parse(content);
-      } catch (error) {
-        console.error('Failed to parse JSON response:', content);
-        console.error('Raw response length:', content.length);
-        console.error('First 500 chars:', content.substring(0, 500));
+      // Enhanced JSON parsing for Vercel deployment
+      function parseAIResponse(rawContent) {
+        // Log the raw response for debugging
+        console.log('Raw AI response:', rawContent);
+        console.log('Response length:', rawContent.length);
         
-        // Try to extract JSON from the response if it's wrapped in other text
-        const jsonMatch = content.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          try {
-            return JSON.parse(jsonMatch[0]);
-          } catch (secondError) {
-            console.error('Failed to parse extracted JSON:', jsonMatch[0]);
+        // Multiple cleanup strategies
+        let cleanedContent = rawContent;
+        
+        // Remove various markdown code block formats
+        cleanedContent = cleanedContent.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+        cleanedContent = cleanedContent.replace(/^```[\w]*\s*/g, '').replace(/\s*```$/g, '').trim();
+        
+        // Remove common prefixes and suffixes
+        cleanedContent = cleanedContent.replace(/^Here's?\s+.*?:\s*/i, '').trim();
+        cleanedContent = cleanedContent.replace(/^Response:\s*/i, '').trim();
+        
+        // Try direct parsing first
+        try {
+          return JSON.parse(cleanedContent);
+        } catch (error) {
+          console.log('Direct parsing failed:', error.message);
+        }
+        
+        // Try to extract JSON objects with multiple regex patterns
+        const jsonPatterns = [
+          /\{[\s\S]*\}/,  // Object
+          /\[[\s\S]*\]/,  // Array
+          /\{[\s\S]*?\}(?=\s*$)/,  // Object at end
+          /\[[\s\S]*?\](?=\s*$)/,  // Array at end
+        ];
+        
+        for (const pattern of jsonPatterns) {
+          const match = cleanedContent.match(pattern);
+          if (match) {
+            try {
+              const parsed = JSON.parse(match[0]);
+              console.log('Successfully parsed with pattern:', pattern);
+              return parsed;
+            } catch (error) {
+              console.log('Pattern failed:', pattern, error.message);
+            }
           }
         }
         
-        throw new Error(`Invalid JSON response: ${error.message}`);
+        // Try to fix common JSON issues
+        let fixedContent = cleanedContent;
+        
+        // Fix trailing commas
+        fixedContent = fixedContent.replace(/,(\s*[}\]])/g, '$1');
+        
+        // Fix unescaped quotes
+        fixedContent = fixedContent.replace(/([^\\])"/g, '$1\\"');
+        
+        // Try parsing the fixed content
+        try {
+          return JSON.parse(fixedContent);
+        } catch (error) {
+          console.log('Fixed content parsing failed:', error.message);
+        }
+        
+        // Last resort: try to extract any JSON-like structure
+        const lastResortMatch = cleanedContent.match(/[\{\[][\s\S]*[\}\]]/);
+        if (lastResortMatch) {
+          try {
+            return JSON.parse(lastResortMatch[0]);
+          } catch (error) {
+            console.log('Last resort parsing failed:', error.message);
+          }
+        }
+        
+        // If all else fails, log detailed error info
+        console.error('Complete JSON parsing failure');
+        console.error('Original content:', rawContent);
+        console.error('Cleaned content:', cleanedContent);
+        console.error('Content preview:', cleanedContent.substring(0, 200));
+        
+        throw new Error('Could not parse AI response as JSON. Response may be malformed or contain unexpected format.');
       }
+      
+      return parseAIResponse(content);
     }
   } catch (error) {
     console.error('AI API Error:', error.response?.status, error.response?.data);
