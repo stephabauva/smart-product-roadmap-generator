@@ -107,13 +107,13 @@ Update prompts to include language parameter:
 - Only values should be translated
 
 ### 8. Testing Checklist
-- [ ] Language toggle switches all UI elements instantly
-- [ ] French is the default language on first load
-- [ ] Language preference persists on page reload
-- [ ] Generated roadmaps are fully in French when French is selected
-- [ ] Charts display French labels
+- [X] Language toggle switches all UI elements instantly
+- [X] French is the default language on first load
+- [X] Language preference persists on page reload
+- [X] Generated roadmaps are fully in French when French is selected
+- [X] Charts display French labels
 - [ ] Error messages appear in the correct language
-- [ ] API responses generate content in the requested language
+- [X] API responses generate content in the requested language
 
 ## Implementation Priority
 1. Create language toggle UI
