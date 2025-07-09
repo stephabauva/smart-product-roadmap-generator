@@ -592,7 +592,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     `;
                     
                     const processingText = document.createElement('div');
-                    processingText.textContent = 'PROCESSING DATA...';
+                    // Get current language and appropriate text
+                    const currentLanguage = localStorage.getItem('language') || 'fr';
+                    const processingTextContent = currentLanguage === 'fr' ? 'TRAITEMENT DES DONNÉES...' : 'PROCESSING DATA...';
+                    processingText.textContent = processingTextContent;
                     processingText.style.cssText = `
                         color: var(--neon-cyan);
                         font-family: var(--font-primary);

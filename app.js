@@ -207,6 +207,21 @@ form.addEventListener('submit', async (e) => {
     });
     
     const data = await response.json();
+    
+    // Check if response has error
+    if (data.error) {
+      throw new Error(data.error);
+    }
+    
+    // Validate response structure
+    if (!data.userStories || !Array.isArray(data.userStories)) {
+      throw new Error('Invalid response format: userStories missing or not an array');
+    }
+    
+    if (!data.roadmap) {
+      throw new Error('Invalid response format: roadmap missing');
+    }
+    
     displayResults(data);
   } catch (error) {
     alert(translations[currentLanguage].errorGenerating + error.message);

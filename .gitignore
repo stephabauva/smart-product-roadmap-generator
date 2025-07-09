@@ -3,3 +3,5 @@ node_modules/
 test-file.md
 test-file-fr.md
 test-request.json
+test-french.json
+test-french-google.json

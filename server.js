@@ -20,6 +20,19 @@ const models = {
   standard: {
     openai: 'gpt-4.1-2025-04-14',
     google: 'gemini-1.5-pro'
+  },
+  // Google-specific model names
+  lite: {
+    openai: 'gpt-4.1-nano-2025-04-14',
+    google: 'gemini-1.5-flash-8b'
+  },
+  flash: {
+    openai: 'o4-mini-2025-04-16',
+    google: 'gemini-1.5-flash'
+  },
+  pro: {
+    openai: 'gpt-4.1-2025-04-14',
+    google: 'gemini-1.5-pro'
   }
 };
 
@@ -62,13 +75,14 @@ app.get('/api/health', (req, res) => {
 });
 
 app.post('/api/generate-roadmap', async (req, res) => {
-  const { apiProvider, apiKey, modelSize, productIdea, targetAudience } = req.body;
+  const { apiProvider, apiKey, modelSize, productIdea, targetAudience, language = 'en' } = req.body;
   
   try {
+    const languageInstruction = language === 'fr' ? 'Respond entirely in French. ' : '';
     const userStoriesPrompt = `Product: ${productIdea}
 Target Audience: ${targetAudience}
 
-Generate 5-7 user stories in the format:
+${languageInstruction}Generate 5-7 user stories in the format:
 "As a [user type], I want [feature] so that [benefit]"
 
 Return ONLY valid JSON as an array of objects with fields: userType, feature, benefit, priority (1-5). Do not include any markdown formatting or code blocks.
@@ -88,7 +102,7 @@ Example format:
     // Create different prompts based on model tier
     const getPromptForModel = (modelSize) => {
       if (modelSize === 'nano') {
-        return `Based on these user stories: ${JSON.stringify(userStories)}
+        return `${languageInstruction}Based on these user stories: ${JSON.stringify(userStories)}
 
 Create a product roadmap with MVP and 3 iterations. Include different feature types:
 - Core/Basic features (essential functionality)
@@ -119,7 +133,7 @@ Return ONLY valid JSON:
   "changeManagement": ["User training", "Rollout plan"]
 }`;
       } else {
-        return `Based on these user stories: ${JSON.stringify(userStories)}
+        return `${languageInstruction}Based on these user stories: ${JSON.stringify(userStories)}
 
 Create a detailed product roadmap with:
 1. MVP definition (3-4 CORE/BASIC features - essential functionality)
