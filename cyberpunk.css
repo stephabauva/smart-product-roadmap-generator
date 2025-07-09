@@ -1529,6 +1529,7 @@ p {
   animation: gridPulse 4s ease-in-out infinite;
   transform-style: preserve-3d;
   perspective: 1000px;
+  will-change: transform, opacity;
 }
 
 .cyber-grid::before {
@@ -1544,6 +1545,7 @@ p {
   background-size: 100px 100px;
   animation: gridShift 6s linear infinite;
   opacity: 0.3;
+  will-change: transform;
 }
 
 @keyframes gridPulse {
@@ -1585,6 +1587,7 @@ p {
   border-radius: 50%;
   filter: blur(2px);
   animation: float 8s ease-in-out infinite;
+  will-change: transform;
 }
 
 .neon-orb.cyan {
@@ -1616,5 +1619,355 @@ p {
   100% {
     transform: translate(-50%, -50%) scale(50);
     opacity: 0;
+  }
+}
+
+/* ==========================================
+   PHASE 5: PERFORMANCE OPTIMIZATIONS
+   ========================================== */
+
+/* GPU Acceleration for all animated elements */
+.quantum-btn,
+.neural-input,
+.holo-card,
+.user-story-card,
+.metrics-card {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+/* Lazy loading for heavy effects */
+.cyber-effects-container {
+  contain: layout style paint;
+}
+
+/* Optimize animations for mobile */
+@media (max-width: 768px) {
+  .cyber-grid {
+    animation-duration: 6s;
+    background-size: 100px 100px;
+  }
+  
+  .neon-orb {
+    animation-duration: 12s;
+    filter: blur(1px);
+  }
+  
+  .holo-card {
+    transform-style: initial;
+    perspective: initial;
+  }
+  
+  .holo-card:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* Reduce motion for performance */
+@media (prefers-reduced-motion: reduce) {
+  .cyber-grid,
+  .neon-orb,
+  .matrix-rain,
+  .input-scanner,
+  .btn-scanner,
+  .card-border::before,
+  .card-border::after {
+    animation: none !important;
+  }
+  
+  .quantum-btn:hover,
+  .neural-input:hover,
+  .holo-card:hover {
+    transform: none !important;
+  }
+  
+  .holo-shimmer {
+    display: none;
+  }
+}
+
+/* ==========================================
+   PHASE 5: ACCESSIBILITY FEATURES
+   ========================================== */
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  :root {
+    --neon-cyan: #00ffff;
+    --neon-magenta: #ff00ff;
+    --neon-green: #00ff00;
+    --text-primary: #ffffff;
+    --text-secondary: #ffffff;
+    --text-muted: #cccccc;
+    --bg-primary: #000000;
+    --bg-secondary: #111111;
+    --bg-tertiary: #222222;
+  }
+  
+  .cyber-grid,
+  .neon-orbs,
+  .matrix-rain {
+    opacity: 0.1;
+  }
+  
+  .holo-shimmer {
+    display: none;
+  }
+  
+  .quantum-btn,
+  .neural-input input,
+  .holo-card {
+    border-width: 2px;
+  }
+}
+
+/* Screen reader support */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus indicators for keyboard navigation */
+.quantum-btn:focus,
+.neural-input input:focus,
+.neural-input textarea:focus,
+.neural-input select:focus,
+.cyber-select select:focus,
+.cyber-dropdown-trigger:focus {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+}
+
+/* Skip link for keyboard navigation */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--bg-primary);
+  color: var(--neon-cyan);
+  padding: 8px;
+  border: 2px solid var(--neon-cyan);
+  text-decoration: none;
+  z-index: 100;
+  font-family: var(--font-primary);
+  font-size: 0.875rem;
+  border-radius: var(--radius-sm);
+  transition: top 0.3s ease;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Ensure sufficient color contrast */
+.neural-input input::placeholder,
+.neural-input textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+/* Keyboard navigation indicators */
+.cyber-dropdown-option:focus {
+  color: var(--neon-cyan);
+  background: rgba(0, 255, 255, 0.2);
+  outline: 1px solid var(--neon-cyan);
+}
+
+/* Aria live regions for dynamic content */
+.loading-announcement,
+.error-announcement,
+.success-announcement {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* ==========================================
+   PHASE 5: RESPONSIVE DESIGN ENHANCEMENTS
+   ========================================== */
+
+/* Touch-friendly interface */
+@media (pointer: coarse) {
+  .quantum-btn {
+    min-height: 44px;
+    padding: 12px 20px;
+  }
+  
+  .neural-input input,
+  .neural-input textarea,
+  .neural-input select,
+  .cyber-select select {
+    min-height: 44px;
+    padding: 12px 16px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  .cyber-dropdown-trigger {
+    min-height: 44px;
+  }
+  
+  .cyber-dropdown-option {
+    padding: 12px 16px;
+  }
+  
+  .holo-card {
+    padding: var(--spacing-lg);
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .container {
+    max-width: 768px;
+    padding: 0 var(--spacing-lg);
+  }
+  
+  .cyber-container {
+    padding: var(--spacing-lg);
+  }
+  
+  .quantum-btn {
+    padding: 14px 28px;
+    font-size: 0.9rem;
+  }
+  
+  h1 {
+    font-size: 2.25rem;
+  }
+  
+  h2 {
+    font-size: 1.75rem;
+  }
+}
+
+/* Mobile-first responsive breakpoints */
+@media (max-width: 640px) {
+  .container {
+    padding: 0 var(--spacing-sm);
+  }
+  
+  .cyber-container {
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .neural-input {
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .quantum-btn {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 0.875rem;
+  }
+  
+  .holo-card {
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .user-story-card,
+  .metrics-card {
+    padding: var(--spacing-md);
+  }
+}
+
+/* Ultra-wide screen optimizations */
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1400px;
+  }
+  
+  .cyber-grid {
+    background-size: 75px 75px;
+  }
+  
+  .cyber-grid::before {
+    background-size: 150px 150px;
+  }
+}
+
+/* Print styles */
+@media print {
+  .cyber-grid,
+  .neon-orbs,
+  .matrix-rain,
+  .input-scanner,
+  .btn-particles,
+  .holo-shimmer,
+  .card-border {
+    display: none !important;
+  }
+  
+  .quantum-btn,
+  .neural-input input,
+  .holo-card {
+    border: 1px solid #333 !important;
+    box-shadow: none !important;
+    background: white !important;
+    color: black !important;
+  }
+  
+  h1, h2, h3 {
+    text-shadow: none !important;
+  }
+}
+
+/* Landscape mobile optimizations */
+@media (max-width: 896px) and (orientation: landscape) {
+  .cyber-container {
+    padding: var(--spacing-md);
+  }
+  
+  .quantum-btn {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+  }
+  
+  .neural-input input,
+  .neural-input textarea,
+  .neural-input select {
+    padding: 8px 12px;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  h2 {
+    font-size: 1.25rem;
+  }
+}
+
+/* Dark mode support (system preference) */
+@media (prefers-color-scheme: dark) {
+  /* Already implemented with dark theme as default */
+}
+
+/* Light mode fallback */
+@media (prefers-color-scheme: light) {
+  .cyber-theme-toggle {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--neon-cyan);
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+  }
+  
+  .cyber-theme-toggle:hover {
+    background: var(--bg-secondary);
+    box-shadow: var(--shadow-glow-cyan);
   }
 }
