@@ -2,6 +2,60 @@ const form = document.getElementById('roadmapForm');
 const loading = document.getElementById('loading');
 const results = document.getElementById('results');
 
+// Model size options for different providers
+const modelSizeOptions = {
+  openai: [
+    { value: 'nano', label: 'Nano (Fastest)' },
+    { value: 'mini', label: 'Mini (Balanced)' },
+    { value: 'standard', label: 'Standard (Best Quality)' }
+  ],
+  google: [
+    { value: 'lite', label: 'Lite (Fastest)' },
+    { value: 'flash', label: 'Flash (Balanced)' },
+    { value: 'pro', label: 'Pro (Best Quality)' }
+  ]
+};
+
+// Update model size dropdown based on provider selection
+function updateModelSizeOptions() {
+  const provider = document.getElementById('apiProvider').value;
+  const modelSizeSelect = document.getElementById('modelSize');
+  const currentValue = modelSizeSelect.value;
+  
+  // Clear current options
+  modelSizeSelect.innerHTML = '';
+  
+  // Add new options based on provider
+  const options = modelSizeOptions[provider];
+  options.forEach(option => {
+    const optionElement = document.createElement('option');
+    optionElement.value = option.value;
+    optionElement.textContent = option.label;
+    modelSizeSelect.appendChild(optionElement);
+  });
+  
+  // Try to maintain equivalent selection
+  if (provider === 'openai') {
+    // Map Google tiers to OpenAI tiers
+    const tierMapping = { 'lite': 'nano', 'flash': 'mini', 'pro': 'standard' };
+    const mappedValue = tierMapping[currentValue] || 'mini';
+    modelSizeSelect.value = mappedValue;
+  } else if (provider === 'google') {
+    // Map OpenAI tiers to Google tiers
+    const tierMapping = { 'nano': 'lite', 'mini': 'flash', 'standard': 'pro' };
+    const mappedValue = tierMapping[currentValue] || 'flash';
+    modelSizeSelect.value = mappedValue;
+  }
+}
+
+// Initialize model size options on page load
+document.addEventListener('DOMContentLoaded', () => {
+  updateModelSizeOptions();
+});
+
+// Listen for provider changes
+document.getElementById('apiProvider').addEventListener('change', updateModelSizeOptions);
+
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   
