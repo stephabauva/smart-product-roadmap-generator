@@ -40,7 +40,7 @@ const formatMetrics = (metrics) => {
   return metrics.map(metric => {
     // Handle both string and object formats
     if (typeof metric === 'string') {
-      return `<div class="mb-2">• ${metric}</div>`;
+      return `<div class="metrics-item">• ${metric}</div>`;
     }
     
     // Extract meaningful data from metric objects
@@ -49,10 +49,10 @@ const formatMetrics = (metrics) => {
     const target = metric.target || metric.value || '';
     
     return `
-      <div class="mb-3 p-2 bg-gray-50 rounded">
-        ${iteration ? `<span class="font-semibold">Phase ${iteration}:</span>` : ''}
+      <div class="metrics-item">
+        ${iteration ? `<span class="phase-label">Phase ${iteration}:</span>` : ''}
         <span>${description}</span>
-        ${target ? `<span class="text-blue-600 ml-2">(Target: ${target})</span>` : ''}
+        ${target ? `<span class="target-value ml-2">(Target: ${target})</span>` : ''}
       </div>
     `;
   }).join('');
@@ -63,18 +63,16 @@ const formatChangeManagement = (items) => {
   if (!Array.isArray(items) || items.length === 0) {
     // Fallback content if AI doesn't provide
     return `
-      <div class="text-gray-600">
-        <p>• Stakeholder communication plan needed</p>
-        <p>• User training materials to be developed</p>
-        <p>• Phased rollout strategy recommended</p>
-      </div>
+      <div class="metrics-item">• Stakeholder communication plan needed</div>
+      <div class="metrics-item">• User training materials to be developed</div>
+      <div class="metrics-item">• Phased rollout strategy recommended</div>
     `;
   }
   
   return items.map(item => {
     const text = typeof item === 'string' ? item : 
                  item.action || item.description || JSON.stringify(item);
-    return `<p class="mb-2">• ${text}</p>`;
+    return `<div class="metrics-item">• ${text}</div>`;
   }).join('');
 };
 
@@ -83,9 +81,9 @@ function displayResults(data) {
   
   // Display user stories
   const storiesHtml = data.userStories.map(story => `
-    <div class="mb-3 p-3 bg-gray-50 rounded">
-      <p class="font-medium">As a ${story.userType}, I want ${story.feature} so that ${story.benefit}</p>
-      <span class="text-sm text-gray-500">Priority: ${story.priority}/5</span>
+    <div class="user-story-card">
+      <p class="story-text">As a ${story.userType}, I want ${story.feature} so that ${story.benefit}</p>
+      <span class="story-priority">Priority: ${story.priority}/5</span>
     </div>
   `).join('');
   document.getElementById('userStories').innerHTML = storiesHtml;
@@ -96,15 +94,15 @@ function displayResults(data) {
   // Display metrics and change management with better formatting
   const metricsHtml = `
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <h3 class="font-semibold mb-3 text-lg">Success Metrics</h3>
-        <div class="space-y-2">
+      <div class="metrics-card">
+        <h3>Success Metrics</h3>
+        <div>
           ${formatMetrics(data.roadmap?.metrics || [])}
         </div>
       </div>
-      <div>
-        <h3 class="font-semibold mb-3 text-lg">Change Management</h3>
-        <div class="space-y-2">
+      <div class="metrics-card">
+        <h3>Change Management</h3>
+        <div>
           ${formatChangeManagement(data.roadmap?.changeManagement || [])}
         </div>
       </div>
