@@ -58,13 +58,29 @@ async function callAI(provider, apiKey, modelSize, prompt) {
       let content = response.data.candidates[0].content.parts[0].text;
       
       // Clean up the response - remove markdown code blocks if present
-      content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+      content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      
+      // Additional cleanup for common formatting issues
+      content = content.replace(/^\s*```\s*/, '').replace(/\s*```\s*$/, '');
       
       // Try to parse, if it fails, log the raw content for debugging
       try {
         return JSON.parse(content);
       } catch (error) {
         console.error('Failed to parse JSON response:', content);
+        console.error('Raw response length:', content.length);
+        console.error('First 500 chars:', content.substring(0, 500));
+        
+        // Try to extract JSON from the response if it's wrapped in other text
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          try {
+            return JSON.parse(jsonMatch[0]);
+          } catch (secondError) {
+            console.error('Failed to parse extracted JSON:', jsonMatch[0]);
+          }
+        }
+        
         throw new Error(`Invalid JSON response: ${error.message}`);
       }
     }
