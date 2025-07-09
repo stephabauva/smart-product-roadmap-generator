@@ -1,5 +1,7 @@
 # Smart Product Roadmap Generator | Générateur de Feuille de Route Produit IA
 
+![Smart Product Roadmap Generator Demo](github-assets/smart-prd-road-gen.gif)
+
 [English](#english) | [Français](#français)
 
 ---

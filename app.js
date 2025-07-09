@@ -54,6 +54,11 @@ const translations = {
     changeManagement: "Gestion du Changement",
     // Error messages
     errorGenerating: "Erreur lors de la génération de la feuille de route: ",
+    // Validation messages
+    fieldRequired: "Ce champ est obligatoire",
+    apiKeyRequired: "La clé API est obligatoire",
+    productIdeaRequired: "L'idée de produit est obligatoire",
+    targetAudienceRequired: "Le public cible est obligatoire",
     // User story template
     userStoryTemplate: (userType, feature, benefit) => `En tant que ${userType}, je veux ${feature} afin de ${benefit}`,
     priorityLabel: "Priorité: "
@@ -108,6 +113,11 @@ const translations = {
     changeManagement: "Change Management",
     // Error messages
     errorGenerating: "Error generating roadmap: ",
+    // Validation messages
+    fieldRequired: "This field is required",
+    apiKeyRequired: "API key is required",
+    productIdeaRequired: "Product idea is required",
+    targetAudienceRequired: "Target audience is required",
     // User story template
     userStoryTemplate: (userType, feature, benefit) => `As a ${userType}, I want ${feature} so that ${benefit}`,
     priorityLabel: "Priority: "
@@ -249,6 +259,12 @@ document.getElementById('apiProvider').addEventListener('change', updateModelSiz
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
+  
+  // Validate all fields before submission
+  const isValid = validateForm();
+  if (!isValid) {
+    return; // Stop form submission if validation fails
+  }
   
   // Show loading
   loading.classList.remove('hidden');
@@ -515,4 +531,46 @@ function createRoadmapChart(roadmap) {
       }
     }
   });
+}
+
+// Form validation function
+function validateForm() {
+  const t = translations[currentLanguage];
+  let isValid = true;
+  
+  // Clear previous error states
+  document.querySelectorAll('.neural-input').forEach(input => {
+    input.classList.remove('error');
+  });
+  
+  // Fields to validate
+  const fieldsToValidate = [
+    { id: 'apiKey', message: t.apiKeyRequired },
+    { id: 'productIdea', message: t.productIdeaRequired },
+    { id: 'targetAudience', message: t.targetAudienceRequired }
+  ];
+  
+  fieldsToValidate.forEach(field => {
+    const element = document.getElementById(field.id);
+    const value = element.value.trim();
+    
+    if (!value) {
+      // Add error state
+      const inputContainer = element.closest('.neural-input');
+      inputContainer.classList.add('error');
+      
+      // Create or update validation message
+      let validationMessage = inputContainer.querySelector('.validation-message');
+      if (!validationMessage) {
+        validationMessage = document.createElement('div');
+        validationMessage.className = 'validation-message';
+        inputContainer.appendChild(validationMessage);
+      }
+      validationMessage.textContent = field.message;
+      
+      isValid = false;
+    }
+  });
+  
+  return isValid;
 }
