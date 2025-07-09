@@ -1,0 +1,6 @@
+
+> smart-product-roadmap-generator@1.0.0 start
+> node server.js
+
+[dotenv@17.1.0] injecting env (0) from .env (tip: ⚙️  suppress all logs with { quiet: true })
+Server running on port 3001

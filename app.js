@@ -136,50 +136,73 @@ function createRoadmapChart(roadmap) {
   const categorizeFeatures = (features) => {
     const categorized = { core: [], enhancement: [], growth: [] };
     
-    features.forEach(feature => {
+    features.forEach((feature, index) => {
       const featureStr = typeof feature === 'string' ? feature : feature.name || feature.description || String(feature);
+      const lowerFeature = featureStr.toLowerCase();
       
-      // Simple categorization based on keywords
-      if (featureStr.toLowerCase().includes('core') || featureStr.toLowerCase().includes('basic') || featureStr.toLowerCase().includes('essential')) {
+      // Enhanced categorization with better keywords and position-based logic
+      if (lowerFeature.includes('basic') || lowerFeature.includes('essential') || lowerFeature.includes('core') || 
+          lowerFeature.includes('login') || lowerFeature.includes('authentication') || lowerFeature.includes('select') ||
+          lowerFeature.includes('upload') || lowerFeature.includes('process') || lowerFeature.includes('anonymize') ||
+          index < Math.ceil(features.length * 0.4)) { // First 40% are core
         categorized.core.push(featureStr);
-      } else if (featureStr.toLowerCase().includes('enhance') || featureStr.toLowerCase().includes('improve') || featureStr.toLowerCase().includes('optimize')) {
+      } else if (lowerFeature.includes('enhance') || lowerFeature.includes('improve') || lowerFeature.includes('optimize') ||
+                 lowerFeature.includes('customize') || lowerFeature.includes('preview') || lowerFeature.includes('report') ||
+                 lowerFeature.includes('download') || lowerFeature.includes('visual') || lowerFeature.includes('rules') ||
+                 index < Math.ceil(features.length * 0.8)) { // Next 40% are enhancements
         categorized.enhancement.push(featureStr);
-      } else if (featureStr.toLowerCase().includes('growth') || featureStr.toLowerCase().includes('scale') || featureStr.toLowerCase().includes('expand')) {
-        categorized.growth.push(featureStr);
       } else {
-        // Default to core for uncategorized features
-        categorized.core.push(featureStr);
+        // Remaining features or growth-related keywords
+        categorized.growth.push(featureStr);
       }
+    });
+    
+    // Ensure each category has at least something for visualization
+    const allCategorized = [...categorized.core, ...categorized.enhancement, ...categorized.growth];
+    const uncategorized = features.filter(f => {
+      const fStr = typeof f === 'string' ? f : f.name || f.description || String(f);
+      return !allCategorized.includes(fStr);
+    });
+    
+    // Distribute uncategorized features evenly
+    uncategorized.forEach((feature, index) => {
+      const fStr = typeof feature === 'string' ? feature : feature.name || feature.description || String(feature);
+      if (index % 3 === 0) categorized.core.push(fStr);
+      else if (index % 3 === 1) categorized.enhancement.push(fStr);
+      else categorized.growth.push(fStr);
     });
     
     return categorized;
   };
   
   // Create stacked bar chart showing feature categories
+  const coreData = [];
+  const enhancementData = [];
+  const growthData = [];
+  
+  phases.forEach(phase => {
+    const categorized = categorizeFeatures(phase.features);
+    console.log(`Phase ${phase.name}:`, categorized);
+    coreData.push(categorized.core.length);
+    enhancementData.push(categorized.enhancement.length);
+    growthData.push(categorized.growth.length);
+  });
+  
   const datasets = [
     {
       label: 'Core Features',
       backgroundColor: '#3B82F6',
-      data: phases.map(p => {
-        const categorized = categorizeFeatures(p.features);
-        return categorized.core.length;
-      })
+      data: coreData
     },
     {
       label: 'Enhancement Features', 
       backgroundColor: '#10B981',
-      data: phases.map(p => {
-        const categorized = categorizeFeatures(p.features);
-        return categorized.enhancement.length;
-      })
+      data: enhancementData
     },
     {
       label: 'Growth Features',
       backgroundColor: '#F59E0B', 
-      data: phases.map(p => {
-        const categorized = categorizeFeatures(p.features);
-        return categorized.growth.length;
-      })
+      data: growthData
     }
   ];
   
@@ -215,10 +238,15 @@ function createRoadmapChart(roadmap) {
           callbacks: {
             afterLabel: function(context) {
               const phase = phases[context.dataIndex];
-              const allFeatures = phase.features.map(f => 
-                typeof f === 'string' ? f : f.name || f.description || String(f)
-              );
-              return allFeatures.join('\n');
+              const categorized = categorizeFeatures(phase.features);
+              const datasetIndex = context.datasetIndex;
+              
+              let features = [];
+              if (datasetIndex === 0) features = categorized.core;
+              else if (datasetIndex === 1) features = categorized.enhancement;
+              else if (datasetIndex === 2) features = categorized.growth;
+              
+              return features.join('\n');
             }
           }
         }
