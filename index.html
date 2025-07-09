@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Smart Product Roadmap Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50">
+  <div class="container mx-auto p-8 max-w-6xl">
+    <!-- Header -->
+    <h1 class="text-3xl font-bold mb-8">Smart Product Roadmap Generator</h1>
+    
+    <!-- Input Form -->
+    <div class="bg-white p-6 rounded-lg shadow mb-8">
+      <form id="roadmapForm">
+        <!-- API Configuration -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium mb-2">API Provider</label>
+          <select id="apiProvider" class="w-full p-2 border rounded">
+            <option value="openai">OpenAI</option>
+            <option value="google">Google AI</option>
+          </select>
+        </div>
+        
+        <div class="mb-6">
+          <label class="block text-sm font-medium mb-2">API Key</label>
+          <input type="password" id="apiKey" class="w-full p-2 border rounded" placeholder="Your API key" required>
+        </div>
+        
+        <div class="mb-6">
+          <label class="block text-sm font-medium mb-2">Model Size</label>
+          <select id="modelSize" class="w-full p-2 border rounded">
+            <option value="nano">Nano (Fastest)</option>
+            <option value="mini">Mini (Balanced)</option>
+            <option value="standard">Standard (Best Quality)</option>
+          </select>
+        </div>
+        
+        <!-- Product Info -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium mb-2">Product Idea</label>
+          <textarea id="productIdea" class="w-full p-2 border rounded" rows="3" placeholder="Describe your product idea..." required></textarea>
+        </div>
+        
+        <div class="mb-6">
+          <label class="block text-sm font-medium mb-2">Target Audience</label>
+          <input type="text" id="targetAudience" class="w-full p-2 border rounded" placeholder="Who is this for?" required>
+        </div>
+        
+        <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
+          Generate Roadmap
+        </button>
+      </form>
+    </div>
+    
+    <!-- Loading State -->
+    <div id="loading" class="hidden bg-white p-6 rounded-lg shadow mb-8 text-center">
+      <p class="text-gray-600">Generating your roadmap...</p>
+    </div>
+    
+    <!-- Results -->
+    <div id="results" class="hidden">
+      <!-- User Stories -->
+      <div class="bg-white p-6 rounded-lg shadow mb-8">
+        <h2 class="text-xl font-semibold mb-4">User Stories</h2>
+        <div id="userStories"></div>
+      </div>
+      
+      <!-- Roadmap Visualization -->
+      <div class="bg-white p-6 rounded-lg shadow mb-8">
+        <h2 class="text-xl font-semibold mb-4">Product Roadmap</h2>
+        <canvas id="roadmapChart"></canvas>
+      </div>
+      
+      <!-- Metrics & Change Management -->
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-xl font-semibold mb-4">Success Metrics & Change Management</h2>
+        <div id="metrics"></div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="app.js"></script>
+</body>
+</html>
