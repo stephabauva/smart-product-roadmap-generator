@@ -357,6 +357,185 @@ Build a web app that generates AI-powered product roadmaps from user input. Depl
    }
    ```
 
+### Task 4.2: Enhanced PM-Focused Visualization & Metrics Display
+**Goal**: Transform basic visualization into strategic PM-oriented roadmap with proper formatting
+
+1. **Rethink Roadmap Visualization for Product Managers**
+   
+   Current issues:
+   - MVP column shows empty (no features displayed)
+   - Only shows feature count per phase (not strategic)
+   - Single "Features" legend is not informative
+   - Missing timeline, dependencies, business value
+   
+   What PMs actually want to see:
+   - **Timeline View**: Quarters/months for each phase
+   - **Feature Details**: Key features per phase (not just count)
+   - **Business Impact**: Revenue potential, user growth targets
+   - **Risk Indicators**: Technical complexity, dependencies
+   - **Progress Tracking**: What's delivered vs planned
+   
+   Implementation approach:
+   ```javascript
+   function createRoadmapChart(roadmap) {
+     const ctx = document.getElementById('roadmapChart').getContext('2d');
+     
+     // Extract timeline and features for each phase
+     const phases = [
+       { 
+         name: 'MVP', 
+         features: roadmap?.mvp?.features || [],
+         timeline: roadmap?.mvp?.timeline || 'Q1',
+         priority: 'Critical'
+       },
+       ...roadmap.iterations.map((iter, i) => ({
+         name: `Phase ${i + 2}`,
+         features: iter?.features || [],
+         timeline: iter?.timeline || `Q${i + 2}`,
+         priority: iter?.priority || 'High'
+       }))
+     ];
+     
+     // Create stacked bar chart showing feature categories
+     const datasets = [
+       {
+         label: 'Core Features',
+         backgroundColor: '#3B82F6',
+         data: phases.map(p => p.features.filter(f => f.type === 'core').length)
+       },
+       {
+         label: 'Enhancement Features', 
+         backgroundColor: '#10B981',
+         data: phases.map(p => p.features.filter(f => f.type === 'enhancement').length)
+       },
+       {
+         label: 'Growth Features',
+         backgroundColor: '#F59E0B', 
+         data: phases.map(p => p.features.filter(f => f.type === 'growth').length)
+       }
+     ];
+     
+     new Chart(ctx, {
+       type: 'bar',
+       data: {
+         labels: phases.map(p => `${p.name}\n${p.timeline}`),
+         datasets: datasets
+       },
+       options: {
+         responsive: true,
+         scales: {
+           x: { stacked: true },
+           y: { stacked: true }
+         },
+         plugins: {
+           title: {
+             display: true,
+             text: 'Product Roadmap - Strategic Feature Distribution'
+           },
+           tooltip: {
+             callbacks: {
+               afterLabel: function(context) {
+                 const phase = phases[context.dataIndex];
+                 return phase.features.join('\n');
+               }
+             }
+           }
+         }
+       }
+     });
+   }
+   ```
+
+2. **Fix Success Metrics Display**
+   
+   Current: Shows raw JSON objects
+   Target: Clean, formatted metrics with context
+   
+   ```javascript
+   // Better metric formatting
+   const formatMetrics = (metrics) => {
+     if (!Array.isArray(metrics)) return '';
+     
+     return metrics.map(metric => {
+       // Handle both string and object formats
+       if (typeof metric === 'string') {
+         return `<div class="mb-2">• ${metric}</div>`;
+       }
+       
+       // Extract meaningful data from metric objects
+       const iteration = metric.iteration || metric.phase || '';
+       const description = metric.successMetric || metric.metric || metric.description || '';
+       const target = metric.target || metric.value || '';
+       
+       return `
+         <div class="mb-3 p-2 bg-gray-50 rounded">
+           ${iteration ? `<span class="font-semibold">Phase ${iteration}:</span>` : ''}
+           <span>${description}</span>
+           ${target ? `<span class="text-blue-600 ml-2">(Target: ${target})</span>` : ''}
+         </div>
+       `;
+     }).join('');
+   };
+   ```
+
+3. **Populate Change Management Content**
+   
+   Ensure AI returns actual change management strategies:
+   - Update roadmap prompt to explicitly request change management items
+   - Format as actionable steps with ownership and timeline
+   
+   ```javascript
+   // Enhanced display for change management
+   const formatChangeManagement = (items) => {
+     if (!Array.isArray(items) || items.length === 0) {
+       // Fallback content if AI doesn't provide
+       return `
+         <div class="text-gray-600">
+           <p>• Stakeholder communication plan needed</p>
+           <p>• User training materials to be developed</p>
+           <p>• Phased rollout strategy recommended</p>
+         </div>
+       `;
+     }
+     
+     return items.map(item => {
+       const text = typeof item === 'string' ? item : 
+                    item.action || item.description || JSON.stringify(item);
+       return `<p class="mb-2">• ${text}</p>`;
+     }).join('');
+   };
+   ```
+
+4. **Update app.js Display Logic**
+   
+   Replace current metrics display with:
+   ```javascript
+   // Display metrics and change management with better formatting
+   const metricsHtml = `
+     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+       <div>
+         <h3 class="font-semibold mb-3 text-lg">Success Metrics</h3>
+         <div class="space-y-2">
+           ${formatMetrics(data.roadmap?.metrics || [])}
+         </div>
+       </div>
+       <div>
+         <h3 class="font-semibold mb-3 text-lg">Change Management</h3>
+         <div class="space-y-2">
+           ${formatChangeManagement(data.roadmap?.changeManagement || [])}
+         </div>
+       </div>
+     </div>
+   `;
+   ```
+
+5. **Testing the Enhanced Display**
+   - Verify MVP features are visible
+   - Check multi-category legend works
+   - Ensure metrics show formatted text, not JSON
+   - Confirm change management has content
+   - Test with different AI responses
+
 ### Task 5: Testing & Deployment
 **Goal**: Deploy working prototype
 
