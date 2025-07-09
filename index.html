@@ -35,7 +35,7 @@
         </div>
         
         <div class="neural-input">
-          <label id="apiKeyLabel">API Key</label>
+          <label id="apiKeyLabel">API Key <span id="apiKeyHelp" class="text-cyan-400 cursor-pointer hover:text-cyan-300 text-sm ml-2 underline">Need help?</span></label>
           <div class="neural-input-wrapper">
             <input type="password" id="apiKey" placeholder="Your API key" required>
             <div class="input-glow"></div>
@@ -108,6 +108,78 @@
       <div class="cyber-container">
         <h2 class="mb-4" id="metricsTitle">Success Metrics & Change Management</h2>
         <div id="metrics"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Google API Key Help Modal -->
+  <div id="apiKeyModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-gray-900 border border-cyan-400 p-6 rounded-lg max-w-md w-full mx-4">
+      <h3 id="googleModalTitle" class="text-xl font-bold text-cyan-400 mb-4">How to Get Your Google API Key</h3>
+      <div class="space-y-4 text-gray-300">
+        <div class="flex items-start space-x-3">
+          <span class="text-cyan-400 font-bold">1.</span>
+          <div>
+            <p><span id="googleStep1Text">Visit</span> <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-cyan-400 hover:text-cyan-300 underline">Google AI Studio</a></p>
+          </div>
+        </div>
+        <div class="flex items-start space-x-3">
+          <span class="text-cyan-400 font-bold">2.</span>
+          <div>
+            <p id="googleStep2Text">Login with your Google email address</p>
+          </div>
+        </div>
+        <div class="flex items-start space-x-3">
+          <span class="text-cyan-400 font-bold">3.</span>
+          <div>
+            <p id="googleStep3Text">Click on "Get API Key" button</p>
+          </div>
+        </div>
+        <div class="flex items-start space-x-3">
+          <span class="text-cyan-400 font-bold">4.</span>
+          <div>
+            <p id="googleStep4Text">Copy your API key and paste it here</p>
+          </div>
+        </div>
+      </div>
+      <div class="mt-6 flex justify-end">
+        <button id="closeModal" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded">Got it!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OpenAI API Key Help Modal -->
+  <div id="openaiKeyModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-gray-900 border border-cyan-400 p-6 rounded-lg max-w-md w-full mx-4">
+      <h3 id="openaiModalTitle" class="text-xl font-bold text-cyan-400 mb-4">How to Get Your OpenAI API Key</h3>
+      <div class="space-y-4 text-gray-300">
+        <div class="flex items-start space-x-3">
+          <span class="text-cyan-400 font-bold">1.</span>
+          <div>
+            <p><span id="openaiStep1Text">Visit</span> <a href="https://platform.openai.com/api-keys" target="_blank" class="text-cyan-400 hover:text-cyan-300 underline">OpenAI API Keys</a></p>
+          </div>
+        </div>
+        <div class="flex items-start space-x-3">
+          <span class="text-cyan-400 font-bold">2.</span>
+          <div>
+            <p id="openaiStep2Text">Login to your OpenAI account</p>
+          </div>
+        </div>
+        <div class="flex items-start space-x-3">
+          <span class="text-cyan-400 font-bold">3.</span>
+          <div>
+            <p id="openaiStep3Text">Click "Create new secret key"</p>
+          </div>
+        </div>
+        <div class="flex items-start space-x-3">
+          <span class="text-cyan-400 font-bold">4.</span>
+          <div>
+            <p id="openaiStep4Text">Copy your API key and paste it here</p>
+          </div>
+        </div>
+      </div>
+      <div class="mt-6 flex justify-end">
+        <button id="closeOpenaiModal" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded">Got it!</button>
       </div>
     </div>
   </div>

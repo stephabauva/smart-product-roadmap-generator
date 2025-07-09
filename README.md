@@ -65,10 +65,28 @@ The application features a sophisticated language toggle system:
 
 1. **Select AI Provider**: Choose between OpenAI or Google AI
 2. **Enter API Key**: Provide your API key (not stored server-side)
+   - **Need Help?** Click "create your free Google api key" or "get an OpenAI API key" links next to the API Key field for step-by-step instructions
+   - **Interactive Help Modals**: Built-in modals with clickable links and instructions.
 3. **Choose Model Size**: Select quality/speed trade-off
 4. **Describe Product**: Enter your product idea and target audience
 5. **Generate Roadmap**: Click generate to create your roadmap
 6. **Review Results**: Analyze user stories, roadmap chart, and metrics
+
+### 🗝️ Getting Your API Key
+
+#### For Google AI (Recommended for Free Usage):
+1. Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. Login with your Google email address
+3. Click on "Get API Key" button
+4. Copy your API key and paste it in the application
+
+#### For OpenAI:
+1. Visit [OpenAI API Keys](https://platform.openai.com/api-keys)
+2. Login to your OpenAI account
+3. Click "Create new secret key"
+4. Copy your API key and paste it in the application
+
+*Note: API keys are not stored server-side and are only used for your session.*
 
 ### 📊 Output Features
 
@@ -201,10 +219,28 @@ L'application propose un système sophistiqué de basculement de langue :
 
 1. **Sélectionner le Fournisseur IA**: Choisir entre OpenAI ou Google AI
 2. **Entrer la Clé API**: Fournir votre clé API (non stockée côté serveur)
+   - **Besoin d'aide?** Cliquez sur "créer votre clé API Google gratuite" ou "obtenir une clé API OpenAI" à côté du champ Clé API pour des instructions étape par étape
+   - **Modales d'Aide Interactives**: Modales intégrées avec liens cliquables et instructions.
 3. **Choisir la Taille du Modèle**: Sélectionner le compromis qualité/vitesse
 4. **Décrire le Produit**: Entrer votre idée de produit et audience cible
 5. **Générer la Feuille de Route**: Cliquer sur générer pour créer votre feuille de route
 6. **Réviser les Résultats**: Analyser les histoires utilisateur, graphique et métriques
+
+### 🗝️ Obtenir Votre Clé API
+
+#### Pour Google AI (Recommandé pour l'usage gratuit):
+1. Visitez [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. Connectez-vous avec votre adresse email Google
+3. Cliquez sur le bouton "Get API Key"
+4. Copiez votre clé API et collez-la dans l'application
+
+#### Pour OpenAI:
+1. Visitez [OpenAI API Keys](https://platform.openai.com/api-keys)
+2. Connectez-vous à votre compte OpenAI
+3. Cliquez sur "Create new secret key"
+4. Copiez votre clé API et collez-la dans l'application
+
+*Note: Les clés API ne sont pas stockées côté serveur et ne sont utilisées que pour votre session.*
 
 ### 📊 Fonctionnalités de Sortie
 

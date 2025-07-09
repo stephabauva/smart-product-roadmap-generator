@@ -8,7 +8,21 @@ const translations = {
     pageTitle: "Générateur de Feuille de Route Produit IA",
     apiProviderLabel: "Fournisseur d'API",
     apiKeyLabel: "Clé API",
+    apiKeyHelp: "créer votre clé API Google gratuite",
+    apiKeyHelpOpenAI: "obtenir une clé API OpenAI",
     modelSizeLabel: "Taille du Modèle",
+    // Modal content
+    googleModalTitle: "Comment obtenir votre clé API Google",
+    openaiModalTitle: "Comment obtenir votre clé API OpenAI",
+    googleStep1: "Visitez",
+    googleStep2: "Connectez-vous avec votre adresse email Google",
+    googleStep3: "Cliquez sur le bouton \"Get API Key\"",
+    googleStep4: "Copiez votre clé API et collez-la ici",
+    openaiStep1: "Visitez",
+    openaiStep2: "Connectez-vous à votre compte OpenAI",
+    openaiStep3: "Cliquez sur \"Create new secret key\"",
+    openaiStep4: "Copiez votre clé API et collez-la ici",
+    modalClose: "Compris!",
     productIdeaLabel: "Idée de Produit",
     productIdeaPlaceholder: "Décrivez votre idée de produit en détail...",
     targetAudienceLabel: "Public Cible",
@@ -48,7 +62,21 @@ const translations = {
     pageTitle: "Smart Product Roadmap Generator",
     apiProviderLabel: "API Provider",
     apiKeyLabel: "API Key",
+    apiKeyHelp: "create your free Google api key",
+    apiKeyHelpOpenAI: "get an OpenAI API key",
     modelSizeLabel: "Model Size",
+    // Modal content
+    googleModalTitle: "How to Get Your Google API Key",
+    openaiModalTitle: "How to Get Your OpenAI API Key",
+    googleStep1: "Visit",
+    googleStep2: "Login with your Google email address",
+    googleStep3: "Click on \"Get API Key\" button",
+    googleStep4: "Copy your API key and paste it here",
+    openaiStep1: "Visit",
+    openaiStep2: "Login to your OpenAI account",
+    openaiStep3: "Click \"Create new secret key\"",
+    openaiStep4: "Copy your API key and paste it here",
+    modalClose: "Got it!",
     productIdeaLabel: "Product Idea",
     productIdeaPlaceholder: "Describe your product idea in detail...",
     targetAudienceLabel: "Target Audience",
@@ -99,7 +127,7 @@ function updateLanguage(lang) {
   // Update text elements
   document.getElementById('pageTitle').textContent = t.pageTitle;
   document.getElementById('apiProviderLabel').textContent = t.apiProviderLabel;
-  document.getElementById('apiKeyLabel').textContent = t.apiKeyLabel;
+  document.getElementById('apiKeyLabel').innerHTML = `${t.apiKeyLabel} <span id="apiKeyHelp" class="text-cyan-400 cursor-pointer hover:text-cyan-300 text-sm ml-2 underline">${t.apiKeyHelp}</span> | <span id="apiKeyHelpOpenAI" class="text-cyan-400 cursor-pointer hover:text-cyan-300 text-sm ml-2 underline">${t.apiKeyHelpOpenAI}</span>`;
   document.getElementById('modelSizeLabel').textContent = t.modelSizeLabel;
   document.getElementById('productIdeaLabel').textContent = t.productIdeaLabel;
   document.getElementById('productIdea').placeholder = t.productIdeaPlaceholder;
@@ -110,6 +138,20 @@ function updateLanguage(lang) {
   document.getElementById('userStoriesTitle').textContent = t.userStoriesTitle;
   document.getElementById('roadmapTitle').textContent = t.roadmapTitle;
   document.getElementById('metricsTitle').textContent = t.metricsTitle;
+  
+  // Update modal content
+  document.getElementById('googleModalTitle').textContent = t.googleModalTitle;
+  document.getElementById('openaiModalTitle').textContent = t.openaiModalTitle;
+  document.getElementById('googleStep1Text').textContent = t.googleStep1;
+  document.getElementById('googleStep2Text').textContent = t.googleStep2;
+  document.getElementById('googleStep3Text').textContent = t.googleStep3;
+  document.getElementById('googleStep4Text').textContent = t.googleStep4;
+  document.getElementById('openaiStep1Text').textContent = t.openaiStep1;
+  document.getElementById('openaiStep2Text').textContent = t.openaiStep2;
+  document.getElementById('openaiStep3Text').textContent = t.openaiStep3;
+  document.getElementById('openaiStep4Text').textContent = t.openaiStep4;
+  document.getElementById('closeModal').textContent = t.modalClose;
+  document.getElementById('closeOpenaiModal').textContent = t.modalClose;
   
   // Update language toggle buttons
   document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
@@ -178,6 +220,28 @@ document.addEventListener('DOMContentLoaded', () => {
   // Add language toggle event listeners
   document.getElementById('langFr').addEventListener('click', () => updateLanguage('fr'));
   document.getElementById('langEn').addEventListener('click', () => updateLanguage('en'));
+  
+  // Add modal event listeners with delegation
+  document.addEventListener('click', (e) => {
+    if (e.target.id === 'apiKeyHelp') {
+      document.getElementById('apiKeyModal').classList.remove('hidden');
+    }
+    if (e.target.id === 'apiKeyHelpOpenAI') {
+      document.getElementById('openaiKeyModal').classList.remove('hidden');
+    }
+    if (e.target.id === 'closeModal') {
+      document.getElementById('apiKeyModal').classList.add('hidden');
+    }
+    if (e.target.id === 'closeOpenaiModal') {
+      document.getElementById('openaiKeyModal').classList.add('hidden');
+    }
+    if (e.target.id === 'apiKeyModal') {
+      document.getElementById('apiKeyModal').classList.add('hidden');
+    }
+    if (e.target.id === 'openaiKeyModal') {
+      document.getElementById('openaiKeyModal').classList.add('hidden');
+    }
+  });
 });
 
 // Listen for provider changes
