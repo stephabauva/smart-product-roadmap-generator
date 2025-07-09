@@ -6,6 +6,62 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&family=Fira+Code:wght@300;400;500&display=swap');
 
 /* ==========================================
+   LANGUAGE TOGGLE STYLING
+   ========================================== */
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.language-toggle {
+  display: flex;
+  gap: 0;
+  border: 2px solid var(--neon-cyan);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  padding: 2px;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+.lang-btn {
+  background: transparent;
+  border: none;
+  padding: 8px 16px;
+  color: var(--text-secondary);
+  font-family: 'Orbitron', monospace;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 6px;
+}
+
+.lang-btn:hover {
+  color: var(--neon-cyan);
+  text-shadow: 0 0 5px var(--neon-cyan);
+}
+
+.lang-btn.active {
+  background: var(--neon-cyan);
+  color: var(--bg-primary);
+  text-shadow: none;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+}
+
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .language-toggle {
+    align-self: flex-end;
+  }
+}
+
+/* ==========================================
    CSS VARIABLES - COLOR PALETTE
    ========================================== */
 :root {

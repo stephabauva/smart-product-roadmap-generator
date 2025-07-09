@@ -9,14 +9,20 @@
 <body>
   <div class="container p-8">
     <!-- Header -->
-    <h1 class="mb-8">Smart Product Roadmap Generator</h1>
+    <div class="header-container mb-8">
+      <h1 id="pageTitle" class="mb-4">Smart Product Roadmap Generator</h1>
+      <div class="language-toggle">
+        <button id="langFr" class="lang-btn active">FR</button>
+        <button id="langEn" class="lang-btn">EN</button>
+      </div>
+    </div>
     
     <!-- Input Form -->
     <div class="cyber-container">
       <form id="roadmapForm">
         <!-- API Configuration -->
         <div class="neural-input">
-          <label>API Provider</label>
+          <label id="apiProviderLabel">API Provider</label>
           <div class="neural-input-wrapper">
             <select id="apiProvider">
               <option value="openai">OpenAI</option>
@@ -29,7 +35,7 @@
         </div>
         
         <div class="neural-input">
-          <label>API Key</label>
+          <label id="apiKeyLabel">API Key</label>
           <div class="neural-input-wrapper">
             <input type="password" id="apiKey" placeholder="Your API key" required>
             <div class="input-glow"></div>
@@ -39,7 +45,7 @@
         </div>
         
         <div class="neural-input">
-          <label>Model Size</label>
+          <label id="modelSizeLabel">Model Size</label>
           <div class="neural-input-wrapper">
             <select id="modelSize">
               <option value="nano">Nano (Fastest)</option>
@@ -54,7 +60,7 @@
         
         <!-- Product Info -->
         <div class="neural-input">
-          <label>Product Idea</label>
+          <label id="productIdeaLabel">Product Idea</label>
           <div class="neural-input-wrapper">
             <textarea id="productIdea" rows="3" placeholder="Describe your product idea..." required></textarea>
             <div class="input-glow"></div>
@@ -64,7 +70,7 @@
         </div>
         
         <div class="neural-input">
-          <label>Target Audience</label>
+          <label id="targetAudienceLabel">Target Audience</label>
           <div class="neural-input-wrapper">
             <input type="text" id="targetAudience" placeholder="Who is this for?" autocomplete="off" data-form-type="other" required>
             <div class="input-glow"></div>
@@ -73,7 +79,7 @@
           </div>
         </div>
         
-        <button type="submit" class="quantum-btn">
+        <button type="submit" class="quantum-btn" id="generateButton">
           Generate Roadmap
         </button>
       </form>
@@ -81,26 +87,26 @@
     
     <!-- Loading State -->
     <div id="loading" class="hidden cyber-container text-center">
-      <p class="cyber-loading">Generating your roadmap...</p>
+      <p class="cyber-loading" id="loadingText">Generating your roadmap...</p>
     </div>
     
     <!-- Results -->
     <div id="results" class="hidden">
       <!-- User Stories -->
       <div class="cyber-container">
-        <h2 class="mb-4">User Stories</h2>
+        <h2 class="mb-4" id="userStoriesTitle">User Stories</h2>
         <div id="userStories"></div>
       </div>
       
       <!-- Roadmap Visualization -->
       <div class="cyber-container">
-        <h2 class="mb-4">Product Roadmap</h2>
+        <h2 class="mb-4" id="roadmapTitle">Product Roadmap</h2>
         <canvas id="roadmapChart"></canvas>
       </div>
       
       <!-- Metrics & Change Management -->
       <div class="cyber-container">
-        <h2 class="mb-4">Success Metrics & Change Management</h2>
+        <h2 class="mb-4" id="metricsTitle">Success Metrics & Change Management</h2>
         <div id="metrics"></div>
       </div>
     </div>

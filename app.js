@@ -2,19 +2,141 @@ const form = document.getElementById('roadmapForm');
 const loading = document.getElementById('loading');
 const results = document.getElementById('results');
 
-// Model size options for different providers
-const modelSizeOptions = {
-  openai: [
-    { value: 'nano', label: 'Nano (Fastest)' },
-    { value: 'mini', label: 'Mini (Balanced)' },
-    { value: 'standard', label: 'Standard (Best Quality)' }
-  ],
-  google: [
-    { value: 'lite', label: 'Lite (Fastest)' },
-    { value: 'flash', label: 'Flash (Balanced)' },
-    { value: 'pro', label: 'Pro (Best Quality)' }
-  ]
+// Translation object
+const translations = {
+  fr: {
+    pageTitle: "Générateur de Feuille de Route Produit IA",
+    apiProviderLabel: "Fournisseur d'API",
+    apiKeyLabel: "Clé API",
+    modelSizeLabel: "Taille du Modèle",
+    productIdeaLabel: "Idée de Produit",
+    productIdeaPlaceholder: "Décrivez votre idée de produit en détail...",
+    targetAudienceLabel: "Public Cible",
+    targetAudiencePlaceholder: "Qui sont vos utilisateurs cibles?",
+    generateButton: "Générer la Feuille de Route",
+    loadingText: "Génération en cours...",
+    userStoriesTitle: "Histoires Utilisateur",
+    roadmapTitle: "Feuille de Route Produit",
+    metricsTitle: "Métriques de Succès & Gestion du Changement",
+    // Model sizes
+    nanoLabel: "Nano (Le plus rapide)",
+    miniLabel: "Mini (Équilibré)",
+    standardLabel: "Standard (Meilleure qualité)",
+    liteLabel: "Lite (Le plus rapide)",
+    flashLabel: "Flash (Équilibré)",
+    proLabel: "Pro (Meilleure qualité)",
+    // Chart labels
+    mvp: "MVP",
+    iteration: "Itération",
+    feature: "Fonctionnalité",
+    effort: "Effort",
+    priority: "Priorité",
+    coreFeatures: "Fonctionnalités Principales",
+    enhancementFeatures: "Fonctionnalités d'Amélioration",
+    growthFeatures: "Fonctionnalités de Croissance",
+    numberOfFeatures: "Nombre de Fonctionnalités",
+    roadmapChartTitle: "Feuille de Route Produit - Distribution Stratégique des Fonctionnalités",
+    successMetrics: "Métriques de Succès",
+    changeManagement: "Gestion du Changement",
+    // Error messages
+    errorGenerating: "Erreur lors de la génération de la feuille de route: ",
+    // User story template
+    userStoryTemplate: (userType, feature, benefit) => `En tant que ${userType}, je veux ${feature} afin de ${benefit}`,
+    priorityLabel: "Priorité: "
+  },
+  en: {
+    pageTitle: "Smart Product Roadmap Generator",
+    apiProviderLabel: "API Provider",
+    apiKeyLabel: "API Key",
+    modelSizeLabel: "Model Size",
+    productIdeaLabel: "Product Idea",
+    productIdeaPlaceholder: "Describe your product idea in detail...",
+    targetAudienceLabel: "Target Audience",
+    targetAudiencePlaceholder: "Who are your target users?",
+    generateButton: "Generate Roadmap",
+    loadingText: "Generating your roadmap...",
+    userStoriesTitle: "User Stories",
+    roadmapTitle: "Product Roadmap",
+    metricsTitle: "Success Metrics & Change Management",
+    // Model sizes
+    nanoLabel: "Nano (Fastest)",
+    miniLabel: "Mini (Balanced)",
+    standardLabel: "Standard (Best Quality)",
+    liteLabel: "Lite (Fastest)",
+    flashLabel: "Flash (Balanced)",
+    proLabel: "Pro (Best Quality)",
+    // Chart labels
+    mvp: "MVP",
+    iteration: "Iteration",
+    feature: "Feature",
+    effort: "Effort",
+    priority: "Priority",
+    coreFeatures: "Core Features",
+    enhancementFeatures: "Enhancement Features",
+    growthFeatures: "Growth Features",
+    numberOfFeatures: "Number of Features",
+    roadmapChartTitle: "Product Roadmap - Strategic Feature Distribution",
+    successMetrics: "Success Metrics",
+    changeManagement: "Change Management",
+    // Error messages
+    errorGenerating: "Error generating roadmap: ",
+    // User story template
+    userStoryTemplate: (userType, feature, benefit) => `As a ${userType}, I want ${feature} so that ${benefit}`,
+    priorityLabel: "Priority: "
+  }
 };
+
+// Language state
+let currentLanguage = localStorage.getItem('language') || 'fr';
+
+// Update UI language
+function updateLanguage(lang) {
+  currentLanguage = lang;
+  localStorage.setItem('language', lang);
+  
+  const t = translations[lang];
+  
+  // Update text elements
+  document.getElementById('pageTitle').textContent = t.pageTitle;
+  document.getElementById('apiProviderLabel').textContent = t.apiProviderLabel;
+  document.getElementById('apiKeyLabel').textContent = t.apiKeyLabel;
+  document.getElementById('modelSizeLabel').textContent = t.modelSizeLabel;
+  document.getElementById('productIdeaLabel').textContent = t.productIdeaLabel;
+  document.getElementById('productIdea').placeholder = t.productIdeaPlaceholder;
+  document.getElementById('targetAudienceLabel').textContent = t.targetAudienceLabel;
+  document.getElementById('targetAudience').placeholder = t.targetAudiencePlaceholder;
+  document.getElementById('generateButton').textContent = t.generateButton;
+  document.getElementById('loadingText').textContent = t.loadingText;
+  document.getElementById('userStoriesTitle').textContent = t.userStoriesTitle;
+  document.getElementById('roadmapTitle').textContent = t.roadmapTitle;
+  document.getElementById('metricsTitle').textContent = t.metricsTitle;
+  
+  // Update language toggle buttons
+  document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(lang === 'fr' ? 'langFr' : 'langEn').classList.add('active');
+  
+  // Update model size options
+  updateModelSizeOptions();
+}
+
+// Model size options for different providers
+function getModelSizeOptions(provider, lang) {
+  const t = translations[lang];
+  
+  if (provider === 'openai') {
+    return [
+      { value: 'nano', label: t.nanoLabel },
+      { value: 'mini', label: t.miniLabel },
+      { value: 'standard', label: t.standardLabel }
+    ];
+  } else {
+    return [
+      { value: 'lite', label: t.liteLabel },
+      { value: 'flash', label: t.flashLabel },
+      { value: 'pro', label: t.proLabel }
+    ];
+  }
+}
 
 // Update model size dropdown based on provider selection
 function updateModelSizeOptions() {
@@ -25,8 +147,8 @@ function updateModelSizeOptions() {
   // Clear current options
   modelSizeSelect.innerHTML = '';
   
-  // Add new options based on provider
-  const options = modelSizeOptions[provider];
+  // Add new options based on provider and current language
+  const options = getModelSizeOptions(provider, currentLanguage);
   options.forEach(option => {
     const optionElement = document.createElement('option');
     optionElement.value = option.value;
@@ -48,9 +170,14 @@ function updateModelSizeOptions() {
   }
 }
 
-// Initialize model size options on page load
+// Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
-  updateModelSizeOptions();
+  // Initialize language
+  updateLanguage(currentLanguage);
+  
+  // Add language toggle event listeners
+  document.getElementById('langFr').addEventListener('click', () => updateLanguage('fr'));
+  document.getElementById('langEn').addEventListener('click', () => updateLanguage('en'));
 });
 
 // Listen for provider changes
@@ -68,7 +195,8 @@ form.addEventListener('submit', async (e) => {
     apiKey: document.getElementById('apiKey').value,
     modelSize: document.getElementById('modelSize').value,
     productIdea: document.getElementById('productIdea').value,
-    targetAudience: document.getElementById('targetAudience').value
+    targetAudience: document.getElementById('targetAudience').value,
+    language: currentLanguage
   };
   
   try {
@@ -81,7 +209,7 @@ form.addEventListener('submit', async (e) => {
     const data = await response.json();
     displayResults(data);
   } catch (error) {
-    alert('Error generating roadmap: ' + error.message);
+    alert(translations[currentLanguage].errorGenerating + error.message);
   } finally {
     loading.classList.add('hidden');
   }
@@ -133,11 +261,13 @@ const formatChangeManagement = (items) => {
 function displayResults(data) {
   results.classList.remove('hidden');
   
+  const t = translations[currentLanguage];
+  
   // Display user stories
   const storiesHtml = data.userStories.map(story => `
     <div class="user-story-card">
-      <p class="story-text">As a ${story.userType}, I want ${story.feature} so that ${story.benefit}</p>
-      <span class="story-priority">Priority: ${story.priority}/5</span>
+      <p class="story-text">${t.userStoryTemplate(story.userType, story.feature, story.benefit)}</p>
+      <span class="story-priority">${t.priorityLabel}${story.priority}/5</span>
     </div>
   `).join('');
   document.getElementById('userStories').innerHTML = storiesHtml;
@@ -149,13 +279,13 @@ function displayResults(data) {
   const metricsHtml = `
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="metrics-card">
-        <h3>Success Metrics</h3>
+        <h3>${t.successMetrics}</h3>
         <div>
           ${formatMetrics(data.roadmap?.metrics || [])}
         </div>
       </div>
       <div class="metrics-card">
-        <h3>Change Management</h3>
+        <h3>${t.changeManagement}</h3>
         <div>
           ${formatChangeManagement(data.roadmap?.changeManagement || [])}
         </div>
@@ -167,17 +297,18 @@ function displayResults(data) {
 
 function createRoadmapChart(roadmap) {
   const ctx = document.getElementById('roadmapChart').getContext('2d');
+  const t = translations[currentLanguage];
   
   // Extract timeline and features for each phase
   const phases = [
     { 
-      name: 'MVP', 
+      name: t.mvp, 
       features: roadmap?.mvp?.features || [],
       timeline: roadmap?.mvp?.timeline || 'Q1',
       priority: 'Critical'
     },
     ...roadmap.iterations.map((iter, i) => ({
-      name: `Phase ${i + 2}`,
+      name: `${t.iteration} ${i + 2}`,
       features: iter?.features || [],
       timeline: iter?.timeline || `Q${i + 2}`,
       priority: iter?.priority || 'High'
@@ -242,17 +373,17 @@ function createRoadmapChart(roadmap) {
   
   const datasets = [
     {
-      label: 'Core Features',
+      label: t.coreFeatures,
       backgroundColor: '#3B82F6',
       data: coreData
     },
     {
-      label: 'Enhancement Features', 
+      label: t.enhancementFeatures, 
       backgroundColor: '#10B981',
       data: enhancementData
     },
     {
-      label: 'Growth Features',
+      label: t.growthFeatures,
       backgroundColor: '#F59E0B', 
       data: growthData
     }
@@ -273,14 +404,14 @@ function createRoadmapChart(roadmap) {
           beginAtZero: true,
           title: {
             display: true,
-            text: 'Number of Features'
+            text: t.numberOfFeatures
           }
         }
       },
       plugins: {
         title: {
           display: true,
-          text: 'Product Roadmap - Strategic Feature Distribution'
+          text: t.roadmapChartTitle
         },
         legend: {
           display: true,

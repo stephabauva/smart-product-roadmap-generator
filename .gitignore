@@ -1,3 +1,5 @@
 node_modules/
 .env
-test-file.mdtest-request.json
+test-file.md
+test-file-fr.md
+test-request.json
