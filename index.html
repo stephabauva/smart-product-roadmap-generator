@@ -17,35 +17,60 @@
         <!-- API Configuration -->
         <div class="neural-input">
           <label>API Provider</label>
-          <select id="apiProvider">
-            <option value="openai">OpenAI</option>
-            <option value="google">Google AI</option>
-          </select>
+          <div class="neural-input-wrapper">
+            <select id="apiProvider">
+              <option value="openai">OpenAI</option>
+              <option value="google">Google AI</option>
+            </select>
+            <div class="input-glow"></div>
+            <div class="input-scanner"></div>
+            <div class="input-scanner-vertical"></div>
+          </div>
         </div>
         
         <div class="neural-input">
           <label>API Key</label>
-          <input type="password" id="apiKey" placeholder="Your API key" required>
+          <div class="neural-input-wrapper">
+            <input type="password" id="apiKey" placeholder="Your API key" required>
+            <div class="input-glow"></div>
+            <div class="input-scanner"></div>
+            <div class="input-scanner-vertical"></div>
+          </div>
         </div>
         
         <div class="neural-input">
           <label>Model Size</label>
-          <select id="modelSize">
-            <option value="nano">Nano (Fastest)</option>
-            <option value="mini">Mini (Balanced)</option>
-            <option value="standard">Standard (Best Quality)</option>
-          </select>
+          <div class="neural-input-wrapper">
+            <select id="modelSize">
+              <option value="nano">Nano (Fastest)</option>
+              <option value="mini">Mini (Balanced)</option>
+              <option value="standard">Standard (Best Quality)</option>
+            </select>
+            <div class="input-glow"></div>
+            <div class="input-scanner"></div>
+            <div class="input-scanner-vertical"></div>
+          </div>
         </div>
         
         <!-- Product Info -->
         <div class="neural-input">
           <label>Product Idea</label>
-          <textarea id="productIdea" rows="3" placeholder="Describe your product idea..." required></textarea>
+          <div class="neural-input-wrapper">
+            <textarea id="productIdea" rows="3" placeholder="Describe your product idea..." required></textarea>
+            <div class="input-glow"></div>
+            <div class="input-scanner"></div>
+            <div class="input-scanner-vertical"></div>
+          </div>
         </div>
         
         <div class="neural-input">
           <label>Target Audience</label>
-          <input type="text" id="targetAudience" placeholder="Who is this for?" autocomplete="off" data-form-type="other" required>
+          <div class="neural-input-wrapper">
+            <input type="text" id="targetAudience" placeholder="Who is this for?" autocomplete="off" data-form-type="other" required>
+            <div class="input-glow"></div>
+            <div class="input-scanner"></div>
+            <div class="input-scanner-vertical"></div>
+          </div>
         </div>
         
         <button type="submit" class="quantum-btn">
