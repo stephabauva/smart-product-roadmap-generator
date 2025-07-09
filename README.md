@@ -95,9 +95,36 @@ The application features a sophisticated language toggle system:
 
 The application is Vercel-ready with zero configuration:
 
+#### Quick Deploy to Vercel
+
+1. **Fork/Clone this repository**
+2. **Sign up at [vercel.com](https://vercel.com)** (free tier)
+3. **Import your repository**:
+   - Click "New Project"
+   - Import from GitHub
+   - Select this repository
+4. **Deploy automatically** - Vercel detects the configuration
+
+#### Manual Deploy via CLI
+
 ```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy to production
 vercel --prod
+
+# Or deploy to preview
+vercel
 ```
+
+#### Environment Variables
+
+No environment variables are required. Users provide their own API keys through the UI input field for security.
+
+#### Custom Domain (Optional)
+
+After deployment, you can add a custom domain in your Vercel dashboard.
 
 ### 🤝 Contributing
 
@@ -204,9 +231,36 @@ L'application propose un système sophistiqué de basculement de langue :
 
 L'application est prête pour Vercel avec zéro configuration :
 
+#### Déploiement Rapide sur Vercel
+
+1. **Forker/Cloner ce dépôt**
+2. **S'inscrire sur [vercel.com](https://vercel.com)** (niveau gratuit)
+3. **Importer votre dépôt**:
+   - Cliquer "New Project"
+   - Importer depuis GitHub
+   - Sélectionner ce dépôt
+4. **Déploiement automatique** - Vercel détecte la configuration
+
+#### Déploiement Manuel via CLI
+
 ```bash
+# Installer Vercel CLI
+npm i -g vercel
+
+# Déployer en production
 vercel --prod
+
+# Ou déployer en prévisualisation
+vercel
 ```
+
+#### Variables d'Environnement
+
+Aucune variable d'environnement n'est requise. Les utilisateurs fournissent leurs propres clés API via le champ de saisie de l'interface pour la sécurité.
+
+#### Domaine Personnalisé (Optionnel)
+
+Après le déploiement, vous pouvez ajouter un domaine personnalisé dans votre tableau de bord Vercel.
 
 ### 🤝 Contribution
 
