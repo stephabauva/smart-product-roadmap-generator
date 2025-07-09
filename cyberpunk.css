@@ -147,11 +147,12 @@ p {
 }
 
 /* ==========================================
-   NEURAL INPUT FIELDS
+   PHASE 3: NEURAL INPUT FIELDS - ENHANCED
    ========================================== */
 .neural-input {
   position: relative;
   margin-bottom: var(--spacing-lg);
+  overflow: hidden;
 }
 
 .neural-input label {
@@ -163,6 +164,13 @@ p {
   margin-bottom: var(--spacing-sm);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  transition: all var(--transition-normal);
+}
+
+/* Input wrapper for effects */
+.neural-input-wrapper {
+  position: relative;
+  overflow: hidden;
 }
 
 .neural-input input,
@@ -177,6 +185,8 @@ p {
   padding: 12px 16px;
   outline: none;
   transition: all var(--transition-normal);
+  position: relative;
+  z-index: 2;
   
   /* Clipped corners */
   clip-path: polygon(
@@ -189,6 +199,48 @@ p {
   );
 }
 
+/* Corner clips decoration */
+.neural-input-wrapper::before,
+.neural-input-wrapper::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--neon-cyan);
+  transition: all var(--transition-normal);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.neural-input-wrapper::before {
+  top: 0;
+  left: 0;
+  border-right: none;
+  border-bottom: none;
+}
+
+.neural-input-wrapper::after {
+  bottom: 0;
+  right: 0;
+  border-left: none;
+  border-top: none;
+}
+
+/* Input glow effect */
+.input-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, var(--neon-cyan) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+  z-index: 1;
+  pointer-events: none;
+}
+
 .neural-input input:focus,
 .neural-input textarea:focus,
 .neural-input select:focus {
@@ -198,21 +250,73 @@ p {
     inset 0 0 20px rgba(255, 0, 255, 0.1);
 }
 
+.neural-input input:focus ~ .input-glow,
+.neural-input textarea:focus ~ .input-glow,
+.neural-input select:focus ~ .input-glow {
+  opacity: 0.3;
+}
+
+.neural-input input:focus ~ .input-scanner,
+.neural-input textarea:focus ~ .input-scanner,
+.neural-input select:focus ~ .input-scanner {
+  animation: scan 2s linear infinite;
+}
+
 .neural-input input::placeholder,
 .neural-input textarea::placeholder {
   color: var(--text-muted);
+  transition: all var(--transition-normal);
 }
 
-/* Input scanner animation */
-.neural-input::before {
-  content: '';
+/* Animated placeholder */
+.neural-input input:focus::placeholder,
+.neural-input textarea:focus::placeholder {
+  opacity: 0.5;
+  transform: translateX(5px);
+}
+
+/* Input scanner animation - horizontal */
+.input-scanner {
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 2px;
   background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
-  animation: scan 3s linear infinite;
+  animation: scan 3s linear infinite paused;
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* Vertical scanner for focused state */
+.input-scanner-vertical {
+  position: absolute;
+  top: -100%;
+  right: 0;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, var(--neon-magenta), transparent);
+  animation: scanVertical 2s linear infinite paused;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.neural-input:focus-within .input-scanner {
+  animation-play-state: running;
+}
+
+.neural-input:focus-within .input-scanner-vertical {
+  animation-play-state: running;
+}
+
+/* Ripple effect on input */
+.input-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--neon-cyan);
+  transform: translate(-50%, -50%) scale(0);
+  animation: ripple 0.6s ease-out;
+  pointer-events: none;
   z-index: 1;
 }
 
@@ -220,8 +324,34 @@ p {
   to { left: 100%; }
 }
 
+@keyframes scanVertical {
+  to { top: 100%; }
+}
+
+/* Error state */
+.neural-input.error input,
+.neural-input.error textarea,
+.neural-input.error select {
+  border-color: #ff0040;
+  animation: errorPulse 0.5s ease;
+}
+
+.neural-input.error .input-scanner {
+  background: linear-gradient(90deg, transparent, #ff0040, transparent);
+}
+
+.neural-input.error label {
+  color: #ff0040;
+}
+
+@keyframes errorPulse {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
 /* ==========================================
-   QUANTUM BUTTONS
+   PHASE 3: QUANTUM BUTTONS - ENHANCED
    ========================================== */
 .quantum-btn {
   position: relative;
@@ -237,6 +367,7 @@ p {
   cursor: pointer;
   overflow: hidden;
   transition: all var(--transition-normal);
+  isolation: isolate;
   
   /* Clipped corners */
   clip-path: polygon(
@@ -249,23 +380,248 @@ p {
   );
 }
 
+/* Button scanner overlay */
+.quantum-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(0, 255, 0, 0.4), 
+    transparent
+  );
+  transition: left 0.5s ease;
+  z-index: -1;
+}
+
+/* Circuit pattern overlay */
+.quantum-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 5px,
+    rgba(0, 255, 0, 0.03) 5px,
+    rgba(0, 255, 0, 0.03) 10px
+  );
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+  z-index: -1;
+}
+
+/* Button text with glitch layers */
+.quantum-btn .btn-text {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+}
+
+/* Glitch effect layers */
+.quantum-btn .btn-text::before,
+.quantum-btn .btn-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+
+.quantum-btn .btn-text::before {
+  color: var(--neon-cyan);
+  animation: glitchText1 0.3s ease;
+  animation-fill-mode: forwards;
+  animation-play-state: paused;
+}
+
+.quantum-btn .btn-text::after {
+  color: var(--neon-magenta);
+  animation: glitchText2 0.3s ease;
+  animation-fill-mode: forwards;
+  animation-play-state: paused;
+}
+
+/* Particle container */
+.btn-particles {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Particle effect */
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--neon-green);
+  border-radius: 50%;
+  opacity: 0;
+  box-shadow: 0 0 6px var(--neon-green);
+}
+
+/* Hover state */
 .quantum-btn:hover {
   transform: translateY(-2px);
   box-shadow: 
     var(--shadow-glow-green),
     inset 0 0 30px rgba(0, 255, 0, 0.1);
+  border-color: var(--accent-lime);
+  color: var(--accent-lime);
 }
 
+.quantum-btn:hover::before {
+  left: 100%;
+}
+
+.quantum-btn:hover::after {
+  opacity: 1;
+}
+
+/* Active/Click state */
 .quantum-btn:active {
-  animation: glitch 0.3s ease;
+  transform: translateY(0);
+  animation: quantumGlitch 0.3s ease;
 }
 
-@keyframes glitch {
-  0%, 100% { transform: translate(0); }
-  20% { transform: translate(-2px, 2px); }
-  40% { transform: translate(-2px, -2px); }
-  60% { transform: translate(2px, 2px); }
-  80% { transform: translate(2px, -2px); }
+.quantum-btn:active .btn-text::before,
+.quantum-btn:active .btn-text::after {
+  animation-play-state: running;
+}
+
+/* Loading state */
+.quantum-btn.loading {
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.quantum-btn.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid var(--neon-green);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: quantumSpin 0.8s linear infinite;
+  opacity: 1;
+  background: none;
+  z-index: 3;
+}
+
+/* Disabled state */
+.quantum-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Size variants */
+.quantum-btn.btn-sm {
+  padding: 8px 16px;
+  font-size: 0.75rem;
+}
+
+.quantum-btn.btn-lg {
+  padding: 16px 32px;
+  font-size: 1rem;
+}
+
+/* Color variants */
+.quantum-btn.btn-cyan {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+
+.quantum-btn.btn-cyan:hover {
+  box-shadow: var(--shadow-glow-cyan);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+.quantum-btn.btn-magenta {
+  border-color: var(--neon-magenta);
+  color: var(--neon-magenta);
+}
+
+.quantum-btn.btn-magenta:hover {
+  box-shadow: var(--shadow-glow-magenta);
+  border-color: var(--accent-pink);
+  color: var(--accent-pink);
+}
+
+/* Animations */
+@keyframes quantumGlitch {
+  0%, 100% { 
+    transform: translate(0);
+    filter: hue-rotate(0deg);
+  }
+  20% { 
+    transform: translate(-2px, 2px);
+    filter: hue-rotate(90deg);
+  }
+  40% { 
+    transform: translate(-2px, -2px);
+    filter: hue-rotate(180deg);
+  }
+  60% { 
+    transform: translate(2px, 2px);
+    filter: hue-rotate(270deg);
+  }
+  80% { 
+    transform: translate(2px, -2px);
+    filter: hue-rotate(360deg);
+  }
+}
+
+@keyframes glitchText1 {
+  0%, 100% { 
+    opacity: 0;
+    transform: translate(0);
+  }
+  33% { 
+    opacity: 1;
+    transform: translate(-2px, -2px);
+  }
+  66% { 
+    opacity: 1;
+    transform: translate(2px, 2px);
+  }
+}
+
+@keyframes glitchText2 {
+  0%, 100% { 
+    opacity: 0;
+    transform: translate(0);
+  }
+  33% { 
+    opacity: 1;
+    transform: translate(2px, -2px);
+  }
+  66% { 
+    opacity: 1;
+    transform: translate(-2px, 2px);
+  }
+}
+
+@keyframes quantumSpin {
+  to { transform: rotate(360deg); }
 }
 
 /* ==========================================
@@ -294,6 +650,644 @@ p {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* ==========================================
+   PHASE 3: CYBER SELECT DROPDOWNS
+   ========================================== */
+.cyber-select {
+  position: relative;
+  width: 100%;
+}
+
+/* Custom select styling */
+.cyber-select select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 100%;
+  background: var(--bg-primary);
+  border: 1px solid var(--neon-cyan);
+  color: var(--text-primary);
+  font-family: var(--font-secondary);
+  font-size: 1rem;
+  padding: 12px 40px 12px 16px;
+  outline: none;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  
+  /* Clipped corners */
+  clip-path: polygon(
+    10px 0, 
+    100% 0, 
+    100% calc(100% - 10px), 
+    calc(100% - 10px) 100%, 
+    0 100%, 
+    0 10px
+  );
+}
+
+/* Dropdown arrow */
+.cyber-select::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid var(--neon-cyan);
+  transform: translateY(-50%);
+  pointer-events: none;
+  transition: all var(--transition-normal);
+}
+
+/* Hover state */
+.cyber-select:hover select {
+  border-color: var(--neon-magenta);
+  box-shadow: var(--shadow-glow-magenta);
+}
+
+.cyber-select:hover::after {
+  border-top-color: var(--neon-magenta);
+}
+
+/* Focus state */
+.cyber-select select:focus {
+  border-color: var(--neon-magenta);
+  box-shadow: 
+    var(--shadow-glow-magenta),
+    inset 0 0 20px rgba(255, 0, 255, 0.1);
+}
+
+.cyber-select:focus-within::after {
+  border-top-color: var(--neon-magenta);
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* Option styling (limited browser support) */
+.cyber-select option {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  padding: 8px;
+}
+
+.cyber-select option:hover,
+.cyber-select option:focus {
+  background: var(--bg-tertiary);
+  color: var(--neon-cyan);
+}
+
+/* Disabled state */
+.cyber-select select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cyber-select select:disabled ~ ::after {
+  opacity: 0.5;
+}
+
+/* Scanner line for select */
+.select-scanner {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--neon-cyan);
+  transition: width 0.3s ease;
+  pointer-events: none;
+}
+
+.cyber-select:focus-within .select-scanner {
+  width: 100%;
+}
+
+/* Custom dropdown implementation for better styling control */
+.cyber-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.cyber-dropdown-trigger {
+  width: 100%;
+  background: var(--bg-primary);
+  border: 1px solid var(--neon-cyan);
+  color: var(--text-primary);
+  font-family: var(--font-secondary);
+  font-size: 1rem;
+  padding: 12px 40px 12px 16px;
+  text-align: left;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  position: relative;
+  
+  /* Clipped corners */
+  clip-path: polygon(
+    10px 0, 
+    100% 0, 
+    100% calc(100% - 10px), 
+    calc(100% - 10px) 100%, 
+    0 100%, 
+    0 10px
+  );
+}
+
+.cyber-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--neon-cyan);
+  margin-top: 4px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all var(--transition-normal);
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+  
+  /* Clipped corners */
+  clip-path: polygon(
+    10px 0, 
+    100% 0, 
+    100% calc(100% - 10px), 
+    calc(100% - 10px) 100%, 
+    0 100%, 
+    0 10px
+  );
+}
+
+.cyber-dropdown.open .cyber-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.cyber-dropdown-option {
+  padding: 10px 16px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.cyber-dropdown-option::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+  opacity: 0.3;
+  transition: left 0.3s ease;
+}
+
+.cyber-dropdown-option:hover {
+  color: var(--neon-cyan);
+  background: rgba(0, 255, 255, 0.1);
+}
+
+.cyber-dropdown-option:hover::before {
+  left: 100%;
+}
+
+.cyber-dropdown-option.selected {
+  color: var(--neon-green);
+  background: rgba(0, 255, 0, 0.1);
+}
+
+/* ==========================================
+   PHASE 3: HOLOGRAPHIC CARDS
+   ========================================== */
+.holo-card {
+  position: relative;
+  background: var(--bg-secondary);
+  border: 1px solid var(--neon-cyan);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  
+  /* Clipped corners */
+  clip-path: polygon(
+    10px 0, 
+    100% 0, 
+    100% calc(100% - 10px), 
+    calc(100% - 10px) 100%, 
+    0 100%, 
+    0 10px
+  );
+}
+
+/* Holographic shimmer effect */
+.holo-shimmer {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 0, 255, 0.1) 35%,
+    rgba(0, 255, 255, 0.1) 40%,
+    rgba(255, 255, 0, 0.1) 45%,
+    rgba(255, 0, 255, 0.1) 50%,
+    transparent 55%
+  );
+  transform: translateX(-100%) translateY(-100%);
+  transition: transform 0.6s ease;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Animated border gradient */
+.holo-card::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(
+    45deg,
+    var(--neon-cyan),
+    var(--neon-magenta),
+    var(--neon-green),
+    var(--accent-blue),
+    var(--accent-pink),
+    var(--accent-lime)
+  );
+  background-size: 300% 300%;
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+  animation: borderGradient 4s ease infinite;
+}
+
+@keyframes borderGradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Glass morphism overlay */
+.holo-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Card content */
+.card-content {
+  position: relative;
+  z-index: 2;
+}
+
+/* 3D tilt effect */
+.holo-card:hover {
+  transform: rotateX(5deg) rotateY(-5deg) translateZ(10px);
+  border-color: var(--neon-magenta);
+  box-shadow: 
+    var(--shadow-glow-magenta),
+    0 10px 30px rgba(255, 0, 255, 0.3),
+    inset 0 0 30px rgba(255, 0, 255, 0.1);
+}
+
+.holo-card:hover::before {
+  opacity: 0.7;
+}
+
+.holo-card:hover .holo-shimmer {
+  transform: translateX(100%) translateY(100%);
+}
+
+/* Card variants */
+.holo-card.card-cyan {
+  border-color: var(--neon-cyan);
+}
+
+.holo-card.card-cyan:hover {
+  box-shadow: 
+    var(--shadow-glow-cyan),
+    0 10px 30px rgba(0, 255, 255, 0.3);
+}
+
+.holo-card.card-green {
+  border-color: var(--neon-green);
+}
+
+.holo-card.card-green:hover {
+  box-shadow: 
+    var(--shadow-glow-green),
+    0 10px 30px rgba(0, 255, 0, 0.3);
+}
+
+/* Scanning border animation */
+.card-border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.card-border::before,
+.card-border::after {
+  content: '';
+  position: absolute;
+  background: var(--neon-cyan);
+}
+
+.card-border::before {
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  animation: scanHorizontal 3s linear infinite;
+}
+
+.card-border::after {
+  top: 0;
+  right: 0;
+  width: 2px;
+  height: 0;
+  animation: scanVerticalCard 3s linear infinite;
+  animation-delay: 0.75s;
+}
+
+@keyframes scanHorizontal {
+  0%, 100% { width: 0; }
+  25% { width: 100%; }
+  50%, 75% { width: 100%; }
+}
+
+@keyframes scanVerticalCard {
+  0%, 25% { height: 0; }
+  50% { height: 100%; }
+  75%, 100% { height: 100%; }
+}
+
+/* Content fade-in animation */
+.holo-card .card-content > * {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+.holo-card .card-content > *:nth-child(1) { animation-delay: 0.1s; }
+.holo-card .card-content > *:nth-child(2) { animation-delay: 0.2s; }
+.holo-card .card-content > *:nth-child(3) { animation-delay: 0.3s; }
+.holo-card .card-content > *:nth-child(4) { animation-delay: 0.4s; }
+.holo-card .card-content > *:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Pulse effect for important cards */
+.holo-card.pulse {
+  animation: cardPulse 2s ease-in-out infinite;
+}
+
+@keyframes cardPulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 10px rgba(0, 255, 255, 0.2),
+      inset 0 0 10px rgba(0, 255, 255, 0.1);
+  }
+  50% {
+    box-shadow: 
+      0 0 20px rgba(0, 255, 255, 0.4),
+      inset 0 0 20px rgba(0, 255, 255, 0.2);
+  }
+}
+
+/* ==========================================
+   PHASE 3: FORM VALIDATION STYLING
+   ========================================== */
+/* Success state */
+.neural-input.success input,
+.neural-input.success textarea,
+.neural-input.success select {
+  border-color: var(--neon-green);
+  animation: successPulse 0.5s ease;
+}
+
+.neural-input.success .input-scanner {
+  background: linear-gradient(90deg, transparent, var(--neon-green), transparent);
+}
+
+.neural-input.success label {
+  color: var(--neon-green);
+}
+
+@keyframes successPulse {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(0, 255, 0, 0);
+  }
+  50% { 
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+  }
+}
+
+/* Warning state */
+.neural-input.warning input,
+.neural-input.warning textarea,
+.neural-input.warning select {
+  border-color: #ffaa00;
+  animation: warningFlash 1s ease infinite;
+}
+
+.neural-input.warning .input-scanner {
+  background: linear-gradient(90deg, transparent, #ffaa00, transparent);
+}
+
+.neural-input.warning label {
+  color: #ffaa00;
+}
+
+@keyframes warningFlash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Validation message */
+.validation-message {
+  position: absolute;
+  bottom: -24px;
+  left: 0;
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all var(--transition-normal);
+  pointer-events: none;
+}
+
+.neural-input.error .validation-message {
+  color: #ff0040;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.neural-input.success .validation-message {
+  color: var(--neon-green);
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.neural-input.warning .validation-message {
+  color: #ffaa00;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Password strength indicator */
+.password-strength {
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--bg-tertiary);
+  overflow: hidden;
+}
+
+.password-strength-bar {
+  height: 100%;
+  width: 0;
+  transition: all var(--transition-normal);
+  background: var(--neon-green);
+  box-shadow: 0 0 10px currentColor;
+}
+
+.password-strength.weak .password-strength-bar {
+  width: 33%;
+  background: #ff0040;
+}
+
+.password-strength.medium .password-strength-bar {
+  width: 66%;
+  background: #ffaa00;
+}
+
+.password-strength.strong .password-strength-bar {
+  width: 100%;
+  background: var(--neon-green);
+}
+
+/* Form submit validation effects */
+.form-validating {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.form-validating .neural-input {
+  animation: validateScan 1s ease;
+}
+
+@keyframes validateScan {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+  100% { transform: translateX(0); }
+}
+
+/* Field focus order indicator */
+.neural-input.focus-next::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -30px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--neon-cyan);
+  border-left: none;
+  border-bottom: none;
+  transform: translateY(-50%) rotate(45deg);
+  opacity: 0;
+  animation: nextFieldPulse 1s ease infinite;
+}
+
+@keyframes nextFieldPulse {
+  0%, 100% { opacity: 0; transform: translateY(-50%) rotate(45deg) translateX(0); }
+  50% { opacity: 1; transform: translateY(-50%) rotate(45deg) translateX(5px); }
+}
+
+/* Real-time validation indicators */
+.validation-indicator {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  opacity: 0;
+  transition: all var(--transition-normal);
+}
+
+.neural-input.validating .validation-indicator {
+  opacity: 1;
+  animation: spin 1s linear infinite;
+}
+
+.neural-input.validating .validation-indicator::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--neon-cyan);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: inherit;
+}
+
+.neural-input.success .validation-indicator::before {
+  content: '✓';
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--neon-green);
+  font-weight: bold;
+  border: none;
+  animation: none;
+}
+
+.neural-input.error .validation-indicator::before {
+  content: '✗';
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ff0040;
+  font-weight: bold;
+  border: none;
+  animation: none;
 }
 
 /* ==========================================
