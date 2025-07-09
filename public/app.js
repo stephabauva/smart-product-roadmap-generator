@@ -59,6 +59,7 @@ const translations = {
     apiKeyRequired: "La clé API est obligatoire",
     productIdeaRequired: "L'idée de produit est obligatoire",
     targetAudienceRequired: "Le public cible est obligatoire",
+    clearButton: "Effacer",
     // User story template
     userStoryTemplate: (userType, feature, benefit) => `En tant que ${userType}, je veux ${feature} afin de ${benefit}`,
     priorityLabel: "Priorité: "
@@ -118,6 +119,7 @@ const translations = {
     apiKeyRequired: "API key is required",
     productIdeaRequired: "Product idea is required",
     targetAudienceRequired: "Target audience is required",
+    clearButton: "Clear",
     // User story template
     userStoryTemplate: (userType, feature, benefit) => `As a ${userType}, I want ${feature} so that ${benefit}`,
     priorityLabel: "Priority: "
@@ -144,6 +146,7 @@ function updateLanguage(lang) {
   document.getElementById('targetAudienceLabel').textContent = t.targetAudienceLabel;
   document.getElementById('targetAudience').placeholder = t.targetAudiencePlaceholder;
   document.getElementById('generateButton').textContent = t.generateButton;
+  document.getElementById('clearButton').textContent = t.clearButton;
   document.getElementById('loadingText').textContent = t.loadingText;
   document.getElementById('userStoriesTitle').textContent = t.userStoriesTitle;
   document.getElementById('roadmapTitle').textContent = t.roadmapTitle;
@@ -257,6 +260,32 @@ document.addEventListener('DOMContentLoaded', () => {
 // Listen for provider changes
 document.getElementById('apiProvider').addEventListener('change', updateModelSizeOptions);
 
+// Clear form function
+function clearForm() {
+  document.getElementById('apiKey').value = '';
+  document.getElementById('productIdea').value = '';
+  document.getElementById('targetAudience').value = '';
+  
+  // Clear validation errors
+  document.querySelectorAll('.neural-input').forEach(input => {
+    input.classList.remove('error');
+  });
+  document.querySelectorAll('.validation-message').forEach(msg => {
+    msg.remove();
+  });
+  
+  // Hide results
+  results.classList.add('hidden');
+  
+  // Re-enable generate button
+  const generateButton = document.getElementById('generateButton');
+  generateButton.disabled = false;
+  generateButton.textContent = translations[currentLanguage].generateButton;
+}
+
+// Add clear button event listener
+document.getElementById('clearButton').addEventListener('click', clearForm);
+
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   
@@ -265,6 +294,11 @@ form.addEventListener('submit', async (e) => {
   if (!isValid) {
     return; // Stop form submission if validation fails
   }
+  
+  // Disable generate button to prevent multiple submissions
+  const generateButton = document.getElementById('generateButton');
+  generateButton.disabled = true;
+  generateButton.textContent = translations[currentLanguage].loadingText;
   
   // Show loading
   loading.classList.remove('hidden');
@@ -307,6 +341,9 @@ form.addEventListener('submit', async (e) => {
     alert(translations[currentLanguage].errorGenerating + error.message);
   } finally {
     loading.classList.add('hidden');
+    // Re-enable generate button
+    generateButton.disabled = false;
+    generateButton.textContent = translations[currentLanguage].generateButton;
   }
 });
 
@@ -390,7 +427,15 @@ function displayResults(data) {
   document.getElementById('metrics').innerHTML = metricsHtml;
 }
 
+// Global variable to store chart instance
+let roadmapChartInstance = null;
+
 function createRoadmapChart(roadmap) {
+  // Destroy existing chart if it exists
+  if (roadmapChartInstance) {
+    roadmapChartInstance.destroy();
+  }
+  
   const ctx = document.getElementById('roadmapChart').getContext('2d');
   const t = translations[currentLanguage];
   
@@ -484,7 +529,7 @@ function createRoadmapChart(roadmap) {
     }
   ];
   
-  new Chart(ctx, {
+  roadmapChartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: phases.map(p => `${p.name}\n${p.timeline}`),
