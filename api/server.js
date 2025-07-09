@@ -50,6 +50,13 @@ async function callAI(provider, apiKey, modelSize, prompt) {
         timeout: 45000, // 45 seconds timeout for Vercel
         validateStatus: (status) => status < 500 // Don't throw on 4xx errors
       });
+      
+      // Validate OpenAI response structure
+      if (!response.data || !response.data.choices || !response.data.choices[0] || !response.data.choices[0].message) {
+        console.error('Invalid OpenAI response structure:', JSON.stringify(response.data, null, 2));
+        throw new Error('Invalid response structure from OpenAI API');
+      }
+      
       return JSON.parse(response.data.choices[0].message.content);
     } else {
       const response = await axios.post(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
@@ -59,6 +66,14 @@ async function callAI(provider, apiKey, modelSize, prompt) {
         timeout: 45000, // 45 seconds timeout for Vercel
         validateStatus: (status) => status < 500 // Don't throw on 4xx errors
       });
+      
+      // Validate Google AI response structure
+      if (!response.data || !response.data.candidates || !response.data.candidates[0] || 
+          !response.data.candidates[0].content || !response.data.candidates[0].content.parts || 
+          !response.data.candidates[0].content.parts[0]) {
+        console.error('Invalid Google AI response structure:', JSON.stringify(response.data, null, 2));
+        throw new Error('Invalid response structure from Google AI API');
+      }
       
       let content = response.data.candidates[0].content.parts[0].text;
       
@@ -146,6 +161,7 @@ async function callAI(provider, apiKey, modelSize, prompt) {
     }
   } catch (error) {
     console.error('AI API Error:', error.response?.status, error.response?.data);
+    console.error('Full error object:', error);
     
     // Handle specific HTTP errors
     if (error.response?.status === 401) {
@@ -158,6 +174,10 @@ async function callAI(provider, apiKey, modelSize, prompt) {
       throw new Error(`${provider} API server error. Please try again later.`);
     } else if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
       throw new Error(`Network error: Could not connect to ${provider} API. Please check your internet connection.`);
+    } else if (error.code === 'ECONNABORTED') {
+      throw new Error(`Request timeout: ${provider} API took too long to respond. Please try again.`);
+    } else if (error.message.includes('Invalid response structure')) {
+      throw new Error(`${provider} API returned an unexpected response format. Please try again.`);
     } else {
       throw new Error(`API request failed: ${error.message}`);
     }
@@ -173,6 +193,8 @@ app.post('/api/generate-roadmap', async (req, res) => {
   const { apiProvider, apiKey, modelSize, productIdea, targetAudience, language = 'en' } = req.body;
   
   try {
+    console.log(`Starting roadmap generation for ${language} language with ${apiProvider} provider`);
+    
     const languageInstruction = language === 'fr' ? 'Respond entirely in French. ' : '';
     const userStoriesPrompt = `Product: ${productIdea}
 Target Audience: ${targetAudience}
@@ -192,7 +214,9 @@ Example format:
   }
 ]`;
     
+    console.log('Calling AI for user stories...');
     const userStories = await callAI(apiProvider, apiKey, modelSize, userStoriesPrompt);
+    console.log('User stories generated successfully');
     
     // Create different prompts based on model tier
     const getPromptForModel = (modelSize) => {
@@ -268,10 +292,14 @@ Example format:
     
     const roadmapPrompt = getPromptForModel(modelSize);
     
+    console.log('Calling AI for roadmap...');
     const roadmap = await callAI(apiProvider, apiKey, modelSize, roadmapPrompt);
+    console.log('Roadmap generated successfully');
     
     res.json({ userStories, roadmap });
   } catch (error) {
+    console.error('Error in generate-roadmap endpoint:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({ error: error.message });
   }
 });
