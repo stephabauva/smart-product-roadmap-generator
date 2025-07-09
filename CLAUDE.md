@@ -46,7 +46,7 @@ npm start
 npm install express cors dotenv axios
 
 # Test server health
-curl http://localhost:3000/api/health
+curl http://localhost:3001/api/health
 ```
 
 ## Key Implementation Details

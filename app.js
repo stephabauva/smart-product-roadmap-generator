@@ -52,15 +52,25 @@ function displayResults(data) {
   const metrics = Array.isArray(data.roadmap?.metrics) ? data.roadmap.metrics : [];
   const changeManagement = Array.isArray(data.roadmap?.changeManagement) ? data.roadmap.changeManagement : [];
   
+  // Helper function to safely extract string content from objects or strings
+  const extractString = (item) => {
+    if (typeof item === 'string') return item;
+    if (typeof item === 'object' && item !== null) {
+      // Try common object properties that might contain the actual content
+      return item.metric || item.description || item.title || item.name || JSON.stringify(item);
+    }
+    return String(item);
+  };
+  
   const metricsHtml = `
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <h3 class="font-semibold mb-2">Success Metrics</h3>
-        ${metrics.map(m => `<p class="mb-1">• ${m}</p>`).join('')}
+        ${metrics.map(m => `<p class="mb-1">• ${extractString(m)}</p>`).join('')}
       </div>
       <div>
         <h3 class="font-semibold mb-2">Change Management</h3>
-        ${changeManagement.map(c => `<p class="mb-1">• ${c}</p>`).join('')}
+        ${changeManagement.map(c => `<p class="mb-1">• ${extractString(c)}</p>`).join('')}
       </div>
     </div>
   `;
@@ -94,12 +104,34 @@ function createRoadmapChart(roadmap) {
     options: {
       responsive: true,
       plugins: {
+        title: {
+          display: true,
+          text: 'Product Roadmap - Features per Phase'
+        },
+        legend: {
+          display: true
+        },
         tooltip: {
           callbacks: {
             afterLabel: function(context) {
               const phase = context.dataIndex === 0 ? roadmap.mvp : roadmap.iterations[context.dataIndex - 1];
               return (phase?.features || []).join('\n');
             }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Number of Features'
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: 'Development Phase'
           }
         }
       }

@@ -59,13 +59,13 @@ Build a web app that generates AI-powered product roadmaps from user input. Depl
      // Implementation in Task 3
    });
    
-   const PORT = process.env.PORT || 3000;
+   const PORT = process.env.PORT || 3001;
    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
    ```
 
 3. **Create .env.example**
    ```
-   PORT=3000
+   PORT=3001
    # User will add their own keys
    ```
 
