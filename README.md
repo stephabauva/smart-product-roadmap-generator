@@ -1,6 +1,10 @@
 # Smart Product Roadmap Generator | Générateur de Feuille de Route Produit IA
 
-![Smart Product Roadmap Generator Demo](github-assets/smart-prd-road-gen.gif)
+<div style="display: flex; justify-content: space-between; gap: 10px;">
+<img src="github-assets/generation.png" alt="Smart Product Roadmap Generator - Homepage" style="width: 32%; max-width: 300px;"/>
+<img src="github-assets/stories.png" alt="User Stories Generation" style="width: 32%; max-width: 300px;"/>
+<img src="github-assets/roadmap-graph-metrics.png" alt="Roadmap Graph and Metrics" style="width: 32%; max-width: 300px;"/>
+</div>
 
 [English](#english) | [Français](#français)
 

@@ -39,32 +39,51 @@ const models = {
 async function callAI(provider, apiKey, modelSize, prompt) {
   const model = models[modelSize][provider];
   
-  if (provider === 'openai') {
-    const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-      model: model,
-      messages: [{ role: 'user', content: prompt }],
-      response_format: { type: 'json_object' }
-    }, {
-      headers: { 'Authorization': `Bearer ${apiKey}` }
-    });
-    return JSON.parse(response.data.choices[0].message.content);
-  } else {
-    const response = await axios.post(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { responseMimeType: 'application/json' }
-    });
+  try {
+    if (provider === 'openai') {
+      const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+        model: model,
+        messages: [{ role: 'user', content: prompt }],
+        response_format: { type: 'json_object' }
+      }, {
+        headers: { 'Authorization': `Bearer ${apiKey}` }
+      });
+      return JSON.parse(response.data.choices[0].message.content);
+    } else {
+      const response = await axios.post(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { responseMimeType: 'application/json' }
+      });
+      
+      let content = response.data.candidates[0].content.parts[0].text;
+      
+      // Clean up the response - remove markdown code blocks if present
+      content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+      
+      // Try to parse, if it fails, log the raw content for debugging
+      try {
+        return JSON.parse(content);
+      } catch (error) {
+        console.error('Failed to parse JSON response:', content);
+        throw new Error(`Invalid JSON response: ${error.message}`);
+      }
+    }
+  } catch (error) {
+    console.error('AI API Error:', error.response?.status, error.response?.data);
     
-    let content = response.data.candidates[0].content.parts[0].text;
-    
-    // Clean up the response - remove markdown code blocks if present
-    content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '');
-    
-    // Try to parse, if it fails, log the raw content for debugging
-    try {
-      return JSON.parse(content);
-    } catch (error) {
-      console.error('Failed to parse JSON response:', content);
-      throw new Error(`Invalid JSON response: ${error.message}`);
+    // Handle specific HTTP errors
+    if (error.response?.status === 401) {
+      throw new Error(`Authentication failed: Invalid API key for ${provider}. Please check your API key and try again.`);
+    } else if (error.response?.status === 403) {
+      throw new Error(`Access forbidden: Your API key may not have the required permissions for ${provider}.`);
+    } else if (error.response?.status === 429) {
+      throw new Error(`Rate limit exceeded: Too many requests to ${provider} API. Please try again later.`);
+    } else if (error.response?.status === 500) {
+      throw new Error(`${provider} API server error. Please try again later.`);
+    } else if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
+      throw new Error(`Network error: Could not connect to ${provider} API. Please check your internet connection.`);
+    } else {
+      throw new Error(`API request failed: ${error.message}`);
     }
   }
 }
