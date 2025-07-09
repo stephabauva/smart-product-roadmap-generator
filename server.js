@@ -40,7 +40,19 @@ async function callAI(provider, apiKey, modelSize, prompt) {
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: { responseMimeType: 'application/json' }
     });
-    return JSON.parse(response.data.candidates[0].content.parts[0].text);
+    
+    let content = response.data.candidates[0].content.parts[0].text;
+    
+    // Clean up the response - remove markdown code blocks if present
+    content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+    
+    // Try to parse, if it fails, log the raw content for debugging
+    try {
+      return JSON.parse(content);
+    } catch (error) {
+      console.error('Failed to parse JSON response:', content);
+      throw new Error(`Invalid JSON response: ${error.message}`);
+    }
   }
 }
 
@@ -59,7 +71,17 @@ Target Audience: ${targetAudience}
 Generate 5-7 user stories in the format:
 "As a [user type], I want [feature] so that [benefit]"
 
-Return as JSON array of objects with fields: userType, feature, benefit, priority (1-5)`;
+Return ONLY valid JSON as an array of objects with fields: userType, feature, benefit, priority (1-5). Do not include any markdown formatting or code blocks.
+
+Example format:
+[
+  {
+    "userType": "business user",
+    "feature": "anonymize sensitive data",
+    "benefit": "I can safely use AI services",
+    "priority": 5
+  }
+]`;
     
     const userStories = await callAI(apiProvider, apiKey, modelSize, userStoriesPrompt);
     
@@ -72,7 +94,23 @@ Create a product roadmap with:
 4. Success metrics for each iteration
 5. Change management suggestions
 
-Return as JSON with fields: mvp, iterations, metrics, changeManagement`;
+Return ONLY valid JSON with fields: mvp, iterations, metrics, changeManagement. Do not include any markdown formatting or code blocks.
+
+Example format:
+{
+  "mvp": {
+    "features": ["feature1", "feature2", "feature3"],
+    "timeline": "Q1 2024"
+  },
+  "iterations": [
+    {
+      "features": ["feature4", "feature5"],
+      "timeline": "Q2 2024"
+    }
+  ],
+  "metrics": ["User adoption rate", "Data anonymization accuracy"],
+  "changeManagement": ["Stakeholder training", "Phased rollout"]
+}`;
     
     const roadmap = await callAI(apiProvider, apiKey, modelSize, roadmapPrompt);
     
